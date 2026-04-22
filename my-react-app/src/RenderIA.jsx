@@ -4,8 +4,6 @@ const STYLES = [
   { id: "fotorrealista", label: "Diurno", emoji: "☀️", hint: "Luz natural, materiais reais" },
   { id: "noturno", label: "Noturno", emoji: "🌙", hint: "Luzes artificiais, céu noturno" },
   { id: "por_do_sol", label: "Pôr do Sol", emoji: "🌅", hint: "Golden hour, céu laranja" },
-  { id: "dramatico", label: "Dramático", emoji: "⛈️", hint: "Nuvens pesadas, luz contrastada" },
-  { id: "aquarela", label: "Aquarela", emoji: "🎨", hint: "Ilustração artística" },
 ];
 
 const STYLE_PROMPTS = {
