@@ -224,7 +224,6 @@ Respond with ONLY the Stable Diffusion prompt, max 100 words, written in English
         .r-key-btn:hover{border-color:#c8a66a;color:#c8a66a}
         .r-key-dot{
           width:6px;height:6px;border-radius:50%;
-          background:${apiKey ? "#4a9060" : "#4a3020"};
           flex-shrink:0;
         }
         .r-body{
