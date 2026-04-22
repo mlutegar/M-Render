@@ -570,7 +570,7 @@ Respond with ONLY the Stable Diffusion prompt, max 100 words, written in English
           </div>
           <button className="r-key-btn" onClick={() => setShowSettings(true)}>
             <span className="r-key-dot" />
-            {apiKey ? "API CONFIGURADA" : "CONFIGURAR API"}
+            {apiKey && anthropicKey ? "APIs CONFIGURADAS" : "CONFIGURAR APIs"}
           </button>
         </div>
 
