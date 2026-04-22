@@ -724,17 +724,21 @@ Respond with ONLY the Stable Diffusion prompt, max 100 words, written in English
       {showSettings && (
         <div className="r-overlay" onClick={() => setShowSettings(false)}>
           <div className="r-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="r-modal-title">Configurar API Key</div>
+            <div className="r-modal-title">Configurar APIs</div>
             <div className="r-modal-sub">
-              Crie conta gratuita em{" "}
-              <a href="https://platform.stability.ai" target="_blank" rel="noreferrer">
-                platform.stability.ai
-              </a>
-              {" "}→ API Keys.
-              <br />
-              Você recebe <strong style={{ color: "#c8a66a" }}>25 créditos grátis</strong> (~8 renders).
-              Depois ~R$0,10/render.
+              Duas chaves são necessárias para gerar o render.
             </div>
+
+            <label className="r-in-label">Anthropic API Key</label>
+            <input
+              type="password"
+              className="r-input"
+              placeholder="sk-ant-..."
+              value={anthropicKey}
+              onChange={(e) => setAnthropicKey(e.target.value)}
+              autoComplete="off"
+              spellCheck={false}
+            />
 
             <label className="r-in-label">Stability AI API Key</label>
             <input
@@ -748,7 +752,7 @@ Respond with ONLY the Stable Diffusion prompt, max 100 words, written in English
             />
 
             <div className="r-modal-note">
-              A key fica salva só nessa sessão do navegador. Não é enviada para nenhum servidor intermediário.
+              As chaves ficam salvas só nessa sessão do navegador. Não são enviadas para nenhum servidor intermediário.
             </div>
 
             <div className="r-modal-btns">
