@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 
 const STYLES = [
   { id: "fotorrealista", label: "Diurno", emoji: "☀️", hint: "Luz natural, materiais reais" },
