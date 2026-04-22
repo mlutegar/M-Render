@@ -28,7 +28,6 @@ export default function RenderIA() {
 
   useEffect(() => { localStorage.setItem("stabilityKey", apiKey); }, [apiKey]);
   useEffect(() => { localStorage.setItem("anthropicKey", anthropicKey); }, [anthropicKey]);
-  const [showSettings, setShowSettings] = useState(false);
   const [phase, setPhase] = useState("idle");
   const [log, setLog] = useState("");
   const [result, setResult] = useState(null);
