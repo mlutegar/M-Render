@@ -22,6 +22,7 @@ export default function RenderIA() {
   const [image, setImage] = useState(null);
   const [style, setStyle] = useState(STYLES[0]);
   const [apiKey, setApiKey] = useState("");
+  const [anthropicKey, setAnthropicKey] = useState("");
   const [showSettings, setShowSettings] = useState(false);
   const [phase, setPhase] = useState("idle");
   const [log, setLog] = useState("");
