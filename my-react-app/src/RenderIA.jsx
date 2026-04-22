@@ -21,8 +21,11 @@ const NEGATIVE_PROMPT = "sketch lines, wireframe, CAD drawing, blueprint, blurry
 export default function RenderIA() {
   const [image, setImage] = useState(null);
   const [style, setStyle] = useState(STYLES[0]);
-  const [apiKey, setApiKey] = useState("");
-  const [anthropicKey, setAnthropicKey] = useState("");
+  const [apiKey, setApiKey] = useState(() => localStorage.getItem("stabilityKey") ?? "");
+  const [anthropicKey, setAnthropicKey] = useState(() => localStorage.getItem("anthropicKey") ?? "");
+
+  useEffect(() => { localStorage.setItem("stabilityKey", apiKey); }, [apiKey]);
+  useEffect(() => { localStorage.setItem("anthropicKey", anthropicKey); }, [anthropicKey]);
   const [showSettings, setShowSettings] = useState(false);
   const [phase, setPhase] = useState("idle");
   const [log, setLog] = useState("");
