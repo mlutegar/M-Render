@@ -138,7 +138,7 @@ Respond with ONLY the Stable Diffusion prompt, max 100 words, written in English
 
   const handleGenerate = async () => {
     if (!image) return;
-    if (!apiKey || !anthropicKey) { setShowSettings(true); return; }
+    if (!apiKey || !anthropicKey) return;
 
     try {
       setPhase("analyzing");
