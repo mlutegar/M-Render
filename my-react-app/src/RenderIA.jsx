@@ -721,47 +721,6 @@ Respond with ONLY the Stable Diffusion prompt, max 100 words, written in English
         </div>
       </div>
 
-      {showSettings && (
-        <div className="r-overlay" onClick={() => setShowSettings(false)}>
-          <div className="r-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="r-modal-title">Configurar APIs</div>
-            <div className="r-modal-sub">
-              Duas chaves são necessárias para gerar o render.
-            </div>
-
-            <label className="r-in-label">Anthropic API Key</label>
-            <input
-              type="password"
-              className="r-input"
-              placeholder="sk-ant-..."
-              value={anthropicKey}
-              onChange={(e) => setAnthropicKey(e.target.value)}
-              autoComplete="off"
-              spellCheck={false}
-            />
-
-            <label className="r-in-label">Stability AI API Key</label>
-            <input
-              type="password"
-              className="r-input"
-              placeholder="sk-..."
-              value={apiKey}
-              onChange={(e) => setApiKey(e.target.value)}
-              autoComplete="off"
-              spellCheck={false}
-            />
-
-            <div className="r-modal-note">
-              As chaves ficam salvas só nessa sessão do navegador. Não são enviadas para nenhum servidor intermediário.
-            </div>
-
-            <div className="r-modal-btns">
-              <button className="r-cancel" onClick={() => setShowSettings(false)}>Cancelar</button>
-              <button className="r-save" onClick={() => setShowSettings(false)}>Salvar</button>
-            </div>
-          </div>
-        </div>
-      )}
 
       <input
         ref={fileRef}
