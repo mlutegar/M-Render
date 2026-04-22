@@ -568,7 +568,7 @@ Respond with ONLY the Stable Diffusion prompt, max 100 words, written in English
             <div className="r-sub">SKETCHUP → RENDER FOTORREALISTA COM IA</div>
           </div>
           <button className="r-key-btn" onClick={() => setShowSettings(true)}>
-            <span className="r-key-dot" />
+            <span className="r-key-dot" style={{ background: apiKey && anthropicKey ? "#4a9060" : "#4a3020" }} />
             {apiKey && anthropicKey ? "APIs CONFIGURADAS" : "CONFIGURAR APIs"}
           </button>
         </div>
