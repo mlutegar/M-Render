@@ -487,35 +487,6 @@ export default function RenderIA() {
         onChange={(e) => handleFile(e.target.files[0])}
       />
 
-      {/* Modal: API Key */}
-      {showKeyModal && (
-        <div className="r-overlay" onClick={() => setShowKeyModal(false)}>
-          <div className="r-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="r-modal-title">OpenAI API Key</div>
-            <div className="r-modal-sub">
-              Obtenha sua chave em{" "}
-              <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer">
-                platform.openai.com/api-keys
-              </a>
-              .<br />
-              A chave é salva apenas no seu navegador.
-            </div>
-            <label className="r-in-label">API Key</label>
-            <input
-              className="r-input"
-              type="password"
-              value={tempKey}
-              onChange={(e) => setTempKey(e.target.value)}
-              placeholder="sk-proj-..."
-              autoFocus
-            />
-            <div className="r-modal-btns">
-              <button className="r-cancel" onClick={() => setShowKeyModal(false)}>Cancelar</button>
-              <button className="r-save" onClick={saveKey}>Salvar</button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
