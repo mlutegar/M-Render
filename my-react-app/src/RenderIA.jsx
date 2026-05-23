@@ -8,7 +8,7 @@ const RENDER_PROMPT =
   "Keep the original composition, camera angle, colors, and design untouched. " +
   "Ultra-realistic render, high detail, clean minimal aesthetic, physically accurate lighting.";
 
-/** Converte qualquer dataURL em PNG puro via canvas */
+/** Converte qualquer dataURL em PNG e retorna também as dimensões originais */
 const toPngDataUrl = (dataUrl) =>
   new Promise((resolve) => {
     const img = new Image();
@@ -17,10 +17,21 @@ const toPngDataUrl = (dataUrl) =>
       canvas.width = img.width;
       canvas.height = img.height;
       canvas.getContext("2d").drawImage(img, 0, 0);
-      resolve(canvas.toDataURL("image/png"));
+      resolve({ png: canvas.toDataURL("image/png"), width: img.width, height: img.height });
     };
     img.src = dataUrl;
   });
+
+/**
+ * Escolhe o size suportado pela API mais próximo do aspect ratio original.
+ * gpt-image-1 suporta: 1024x1024 | 1536x1024 (landscape) | 1024x1536 (portrait)
+ */
+const pickSize = (width, height) => {
+  const ratio = width / height;
+  if (ratio > 1.2) return "1536x1024";   // landscape
+  if (ratio < 0.83) return "1024x1536";  // portrait
+  return "1024x1024";                    // quadrado / quase quadrado
+};
 
 export default function RenderIA() {
   const [image, setImage] = useState(null);
