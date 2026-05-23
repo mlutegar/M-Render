@@ -57,7 +57,7 @@ export default function RenderIA() {
     handleFile(e.dataTransfer.files[0]);
   }, []);
 
-  /* ── OpenAI images/edits ─────────────────────────── */
+  /* ── OpenAI via backend proxy (/api/render) ─────── */
   const renderWithOpenAI = async (imageDataUrl) => {
     // Garante formato PNG
     const pngDataUrl = await toPngDataUrl(imageDataUrl);
@@ -67,26 +67,21 @@ export default function RenderIA() {
     for (let i = 0; i < bstr.length; i++) u8[i] = bstr.charCodeAt(i);
     const imageBlob = new Blob([u8], { type: "image/png" });
 
+    // Envia para o servidor Express local (evita CORS)
     const formData = new FormData();
-    formData.append("image[]", imageBlob, "model.png");
+    formData.append("image", imageBlob, "model.png");
     formData.append("prompt", RENDER_PROMPT);
-    formData.append("model", "gpt-image-1");
-    formData.append("n", "1");
-    formData.append("size", "1024x1024");
-    formData.append("quality", "high");
 
-    const response = await fetch("https://api.openai.com/v1/images/edits", {
+    const response = await fetch("/api/render", {
       method: "POST",
-      headers: { Authorization: `Bearer ${openaiKey}` },
       body: formData,
     });
 
+    const data = await response.json();
     if (!response.ok) {
-      const err = await response.json().catch(() => ({}));
-      throw new Error("OpenAI: " + (err.error?.message || response.statusText));
+      throw new Error("OpenAI: " + (data.error || response.statusText));
     }
 
-    const data = await response.json();
     const b64 = data.data?.[0]?.b64_json;
     if (!b64) throw new Error("Resposta inesperada da OpenAI.");
     return `data:image/png;base64,${b64}`;
@@ -94,7 +89,7 @@ export default function RenderIA() {
 
   /* ── Gerar ───────────────────────────────────────── */
   const handleGenerate = async () => {
-    if (!image || !openaiKey) return;
+    if (!image) return;
     try {
       setPhase("generating");
       setLog("Gerando render com OpenAI DALL‑E…");
