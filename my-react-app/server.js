@@ -28,6 +28,12 @@ app.post("/api/render", upload.single("image"), async (req, res) => {
 
     const prompt = req.body.prompt || "";
 
+    // size vem do frontend (calculado pelo aspect ratio da imagem original)
+    const VALID_SIZES = ["1024x1024", "1536x1024", "1024x1536"];
+    const size = VALID_SIZES.includes(req.body.size) ? req.body.size : "1024x1024";
+
+    console.log(`→ Gerando render | size: ${size} | prompt: ${prompt.slice(0, 60)}…`);
+
     // Monta o FormData para a OpenAI
     const form = new FormData();
     form.append("image[]", req.file.buffer, {
@@ -37,7 +43,7 @@ app.post("/api/render", upload.single("image"), async (req, res) => {
     form.append("prompt", prompt);
     form.append("model", "gpt-image-1");
     form.append("n", "1");
-    form.append("size", "1024x1024");
+    form.append("size", size);
     form.append("quality", "high");
 
     const response = await fetch("https://api.openai.com/v1/images/edits", {
