@@ -65,9 +65,11 @@ export default function RenderIA() {
 
   /* ── OpenAI via backend proxy (/api/render) ─────── */
   const renderWithOpenAI = async (imageDataUrl) => {
-    // Garante formato PNG
-    const pngDataUrl = await toPngDataUrl(imageDataUrl);
-    const base64 = pngDataUrl.split(",")[1];
+    // Converte para PNG e captura dimensões originais
+    const { png, width, height } = await toPngDataUrl(imageDataUrl);
+    const size = pickSize(width, height);
+
+    const base64 = png.split(",")[1];
     const bstr = atob(base64);
     const u8 = new Uint8Array(bstr.length);
     for (let i = 0; i < bstr.length; i++) u8[i] = bstr.charCodeAt(i);
@@ -77,6 +79,7 @@ export default function RenderIA() {
     const formData = new FormData();
     formData.append("image", imageBlob, "model.png");
     formData.append("prompt", RENDER_PROMPT);
+    formData.append("size", size);
 
     const response = await fetch("/api/render", {
       method: "POST",
