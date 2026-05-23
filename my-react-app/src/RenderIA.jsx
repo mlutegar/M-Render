@@ -25,11 +25,6 @@ const toPngDataUrl = (dataUrl) =>
 export default function RenderIA() {
   const [image, setImage] = useState(null);
   const [imageName, setImageName] = useState("");
-  const [openaiKey, setOpenaiKey] = useState(
-    () => localStorage.getItem("openaiKey") || import.meta.env.VITE_OPENAI_KEY || ""
-  );
-  const [showKeyModal, setShowKeyModal] = useState(false);
-  const [tempKey, setTempKey] = useState("");
 
   const [phase, setPhase] = useState("idle"); // idle | generating | done | error
   const [log, setLog] = useState("");
