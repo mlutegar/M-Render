@@ -108,16 +108,7 @@ export default function RenderIA() {
     a.click();
   };
 
-  /* ── Key modal ───────────────────────────────────── */
-  const openKeyModal = () => { setTempKey(openaiKey); setShowKeyModal(true); };
-  const saveKey = () => {
-    setOpenaiKey(tempKey);
-    localStorage.setItem("openaiKey", tempKey);
-    setShowKeyModal(false);
-  };
-
   const isLoading = phase === "generating";
-  const keyOk = openaiKey.length > 10;
 
   return (
     <>
