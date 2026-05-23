@@ -11,6 +11,69 @@ const STYLE_PROMPTS = {
 
 const NEGATIVE_PROMPT = "sketch lines, wireframe, CAD drawing, blueprint, blurry, low quality, distorted, ugly, unrealistic, 3d model artifacts, noise";
 
+// ══════════════════════════════════════════════════════════════
+// MOCK INITIAL DATA FOR DEMO MODE
+// ══════════════════════════════════════════════════════════════
+const INITIAL_DATA = {
+  room_style: {
+    nome: "minimalista contemporâneo",
+    descricao: "Quarto minimalista com estética limpa, paleta neutra, linhas retas, simetria visual, iluminação natural suave e detalhes metálicos dourados/brass.",
+    paleta_geral: [
+      { cor: "cinza quente claro", hex_aproximado: "#B8B4AA" },
+      { cor: "branco quente", hex_aproximado: "#F2EFE6" },
+      { cor: "bege claro", hex_aproximado: "#D8CDBA" },
+      { cor: "dourado fosco", hex_aproximado: "#A8894F" },
+      { cor: "grafite escuro", hex_aproximado: "#2B2B28" }
+    ],
+    materiais_predominantes: [
+      "tecido natural", "cerâmica ou porcelanato fosco", "metal dourado fosco",
+      "vidro", "madeira ou MDF laqueado", "papel artístico emoldurado"
+    ]
+  },
+  objects: [
+    { name: "cama central", color: { nome: "bege acinzentado claro", hex_aproximado: "#C8C2B6" }, material: "base estofada ou estrutura baixa revestida em tecido neutro", descricao: "Cama posicionada ao centro da composição, alinhada frontalmente com a parede principal." },
+    { name: "edredom principal", color: { nome: "cinza taupe quente", hex_aproximado: "#A9A59B" }, material: "tecido macio com textura levemente aveludada ou algodão fosco", descricao: "Edredom volumoso e levemente amassado, cobrindo a parte frontal da cama." },
+    { name: "manta dobrada sobre a cama", color: { nome: "cinza médio frio", hex_aproximado: "#8F938E" }, material: "tecido têxtil macio, possivelmente linho ou algodão pesado", descricao: "Manta posicionada horizontalmente sobre a região central da cama." },
+    { name: "travesseiros traseiros", color: { nome: "branco quente", hex_aproximado: "#EEE9DC" }, material: "algodão ou linho fosco", descricao: "Conjunto de travesseiros maiores apoiados na cabeceira, com aparência macia e natural." },
+    { name: "almofadas frontais", color: { nome: "creme claro", hex_aproximado: "#F3EEDC" }, material: "tecido de algodão ou linho natural", descricao: "Almofadas retangulares claras posicionadas na frente dos travesseiros." },
+    { name: "mesa de cabeceira esquerda", color: { nome: "branco quente", hex_aproximado: "#F0EDE4" }, material: "MDF ou madeira laqueada fosca com tampo escuro", descricao: "Criado-mudo de linhas retas com gavetas e estrutura leve." },
+    { name: "mesa de cabeceira direita", color: { nome: "branco quente", hex_aproximado: "#F0EDE4" }, material: "MDF ou madeira laqueada fosca com tampo escuro", descricao: "Criado-mudo simétrico ao da esquerda, com gavetas e pés finos." },
+    { name: "pés das mesas de cabeceira", color: { nome: "dourado fosco", hex_aproximado: "#A8894F" }, material: "metal com acabamento latão escovado ou dourado fosco", descricao: "Pés finos e delicados sob os criados-mudos." },
+    { name: "luminária de mesa esquerda", color: { nome: "branco leitoso e dourado claro", hex_aproximado: "#F5F2EA" }, material: "cúpula esférica em vidro leitoso e base metálica dourada fosca", descricao: "Luminária decorativa com globo branco sobre base cilíndrica." },
+    { name: "vela ou pequeno recipiente decorativo", color: { nome: "branco creme", hex_aproximado: "#E9E2D3" }, material: "cera, cerâmica ou vidro fosco", descricao: "Pequeno objeto decorativo sobre a mesa de cabeceira esquerda." },
+    { name: "luminária de mesa direita", color: { nome: "preto fosco e cobre envelhecido", hex_aproximado: "#2A2925" }, material: "haste em metal preto fosco com foco em metal cobre ou bronze", descricao: "Luminária vertical fina com pequeno refletor direcionável." },
+    { name: "porta-retrato sobre mesa direita", color: { nome: "branco texturizado", hex_aproximado: "#E5E0D6" }, material: "moldura texturizada clara com vidro frontal", descricao: "Pequeno porta-retrato apoiado sobre o criado-mudo direito." },
+    { name: "quadros abstratos sobre a cama", color: { nome: "bege claro, preto suave e dourado", hex_aproximado: "#E9E1CF" }, material: "papel artístico impresso, vidro protetor e moldura metálica dourada fosca", descricao: "Dois quadros com arte abstrata linear emoldurados acima da cama." },
+    { name: "molduras dos quadros", color: { nome: "dourado fosco", hex_aproximado: "#A98A4F" }, material: "metal fino com acabamento latão escovado", descricao: "Molduras estreitas que contornam as duas obras de arte." },
+    { name: "parede principal", color: { nome: "cinza claro quente", hex_aproximado: "#D6D5CD" }, material: "pintura lisa fosca sobre alvenaria ou drywall", descricao: "Parede plana atrás da cama, com acabamento limpo e uniforme." },
+    { name: "parede lateral esquerda", color: { nome: "cinza quente médio", hex_aproximado: "#A7A49B" }, material: "pintura fosca sobre alvenaria ou drywall", descricao: "Superfície arquitetônica lateral formando recuo próximo à área do espelho." },
+    { name: "parede lateral direita", color: { nome: "cinza azulado suave", hex_aproximado: "#AEB8B7" }, material: "pintura lisa fosca", descricao: "Parede estreita junto à janela, com tonalidade fria e discreta." },
+    { name: "piso", color: { nome: "cinza cimento quente", hex_aproximado: "#8E8B82" }, material: "porcelanato ou cerâmica fosca de grande formato", descricao: "Piso com placas grandes, juntas finas e aparência mineral." },
+    { name: "janela ampla lateral direita", color: { nome: "vidro translúcido levemente azulado", hex_aproximado: "#BFD3D8" }, material: "vidro com reflexo suave", descricao: "Grande abertura lateral responsável pela entrada de luz natural." },
+    { name: "persiana horizontal dupla", color: { nome: "branco acinzentado", hex_aproximado: "#D8D8D2" }, material: "tecido translúcido sintético em faixas horizontais", descricao: "Persiana tipo rolô dupla ou zebra, filtrando a luz natural em faixas." },
+    { name: "estrutura da janela", color: { nome: "cinza escuro", hex_aproximado: "#4D514D" }, material: "alumínio pintado ou anodizado", descricao: "Perfis discretos da esquadria ao redor da janela." },
+    { name: "espelho de corpo inteiro", color: { nome: "reflexo prateado com borda dourada", hex_aproximado: "#B8B6AD" }, material: "vidro espelhado com moldura metálica dourada fosca", descricao: "Espelho alto apoiado na lateral esquerda do ambiente." },
+    { name: "estrutura do espelho", color: { nome: "dourado envelhecido", hex_aproximado: "#9A7A3E" }, material: "metal tubular com acabamento latão fosco", descricao: "Moldura fina e suporte traseiro em formato de cavalete." },
+    { name: "prateleira superior esquerda", color: { nome: "branco quente", hex_aproximado: "#EAE6DC" }, material: "madeira pintada ou MDF laqueado fosco", descricao: "Prateleira reta posicionada na lateral esquerda superior." },
+    { name: "livros na prateleira", color: { nome: "branco, bege, cinza e preto", hex_aproximado: "#E8E3D8" }, material: "papel impresso com capas foscas e lombadas variadas", descricao: "Conjunto de livros alinhados na prateleira, com capas predominantemente neutras." },
+    { name: "abertura ou corredor lateral esquerdo", color: { nome: "cinza claro sombreado", hex_aproximado: "#B7B5AC" }, material: "paredes pintadas foscas e piso cerâmico contínuo", descricao: "Recuo arquitetônico lateral que cria profundidade no lado esquerdo do quarto." }
+  ]
+};
+
+// ══════════════════════════════════════════════════════════════
+// CLAUDE RESPONSE MARKDOWN PARSER
+// ══════════════════════════════════════════════════════════════
+const parseJSONFromClaude = (text) => {
+  try {
+    const match = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+    const jsonStr = match ? match[1] : text;
+    return JSON.parse(jsonStr.trim());
+  } catch (err) {
+    console.error("Failed to parse JSON from Claude:", err);
+    throw new Error("Não foi possível converter a resposta da IA em um formato estruturado válido. Saída crua da IA: " + text.slice(0, 100) + "...");
+  }
+};
+
 function App() {
   const baseUrl = import.meta.env.BASE_URL || '/';
 
@@ -45,7 +108,12 @@ function App() {
   const [generatedPrompt, setGeneratedPrompt] = useState('');
   const [isDemoMode, setIsDemoMode] = useState(false);
 
-  // Interactive Editor States (Phase 3)
+  // Deep Editor Mapped States (Phase 3)
+  const [roomData, setRoomData] = useState(null);
+  const [editorLoading, setEditorLoading] = useState(false);
+  const [editorError, setEditorError] = useState(null);
+
+  // Interactive UI Selection states
   const [selectedObject, setSelectedObject] = useState(null);
   const [activeMaterial, setActiveMaterial] = useState('grey_linen');
 
@@ -65,6 +133,9 @@ function App() {
     setIsDemoMode(false);
     setResult(null);
     setGeneratedPrompt('');
+    setRoomData(null);
+    setEditorError(null);
+    setEditorLoading(false);
     setPhase('setup');
     triggerNotification(`Print "${fileInfo.name}" carregado.`);
   };
@@ -76,6 +147,9 @@ function App() {
     setIsDemoMode(false);
     setSelectedObject(null);
     setActiveMaterial('grey_linen');
+    setRoomData(null);
+    setEditorError(null);
+    setEditorLoading(false);
     setPhase('setup');
     triggerNotification("Print removido.");
   };
@@ -89,6 +163,9 @@ function App() {
       type: 'Print Demonstrativo',
       dataUrl: `${baseUrl}assets/sketchup_view.png`
     });
+    setRoomData(null);
+    setEditorError(null);
+    setEditorLoading(false);
     setPhase('slider');
     triggerNotification("Projeto demonstrativo carregado!");
   };
@@ -191,6 +268,9 @@ function App() {
       setLog("Analisando a cena com Claude Vision...");
       setResult(null);
       setGeneratedPrompt("");
+      setRoomData(null);
+      setEditorError(null);
+      setEditorLoading(false);
       setSelectedObject(null);
 
       // 1. Vision Analysis Prompt Generation
@@ -217,6 +297,88 @@ function App() {
       setPhase('error');
       setLog(err.message);
       triggerNotification("Falha na renderização.");
+    }
+  };
+
+  // API Call: Claude Vision maps the rendered image room contents to JSON
+  const analyzeRoomWithClaude = async (base64Image) => {
+    const mediaType = base64Image.startsWith("data:") 
+      ? base64Image.split(";")[0].split(":")[1]
+      : "image/jpeg";
+    const imageData = base64Image.startsWith("data:")
+      ? base64Image.split(",")[1]
+      : base64Image;
+
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": anthropicKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 2000,
+        messages: [{
+          role: "user",
+          content: [
+            { type: "image", source: { type: "base64", media_type: mediaType, data: imageData } },
+            {
+              type: "text",
+              text: `Analise esta imagem de design de interiores e converta todas as informações visuais em um formato JSON estruturado e altamente detalhado. Concentre-se especificamente em isolar objetos individuais. Para cada objeto principal, extraia sua cor precisa (usando nomes descritivos ou códigos hexadecimais) e seu material exato (ex: couro fosco, aço escovado, madeira de carvalho). Inclua JSON para 'room_style', e um array 'objects' contendo 'name', 'color' (com subcampos 'nome' e 'hex_aproximado'), 'material' e 'descricao'. Produza APENAS um JSON válido e formate a saída como um bloco de código JSON copiável usando Markdown (dentro de tags \`\`\`json e \`\`\`). Extraia em português esses dados.`
+            }
+          ]
+        }]
+      })
+    });
+
+    if (!response.ok) {
+      const err = await response.json();
+      throw new Error("Erro Claude (Mapeamento): " + (err.error?.message || response.statusText));
+    }
+    const data = await response.json();
+    return data.content[0].text.trim();
+  };
+
+  const handleEnterEditor = async () => {
+    setPhase('editor');
+    if (roomData) {
+      triggerNotification("Mapeamento inteligente ativo.");
+      return;
+    }
+
+    setEditorLoading(true);
+    setEditorError(null);
+    triggerNotification("Mapeando elementos do ambiente...");
+
+    if (isDemoMode) {
+      // Simulate mapping lag (1.5 seconds) for UX realism
+      setTimeout(() => {
+        setRoomData(INITIAL_DATA);
+        setEditorLoading(false);
+        triggerNotification("Sala de demonstração mapeada!");
+      }, 1500);
+      return;
+    }
+
+    try {
+      const activeImage = result; // base64 stability output
+      if (!activeImage) {
+        throw new Error("Nenhuma imagem renderizada disponível para análise.");
+      }
+      
+      const rawText = await analyzeRoomWithClaude(activeImage);
+      const parsedJSON = parseJSONFromClaude(rawText);
+      
+      setRoomData(parsedJSON);
+      setEditorLoading(false);
+      triggerNotification("Elementos do render mapeados com sucesso!");
+    } catch (err) {
+      console.error(err);
+      setEditorError(err.message);
+      setEditorLoading(false);
+      triggerNotification("Erro ao mapear o ambiente.");
     }
   };
 
@@ -251,13 +413,11 @@ function App() {
       setIsDemoMode(false);
       setSelectedObject(null);
       setActiveMaterial('grey_linen');
+      setRoomData(null);
+      setEditorError(null);
+      setEditorLoading(false);
       triggerNotification("Workspace reiniciado.");
     }
-  };
-
-  const handleEnterEditor = () => {
-    setPhase('editor');
-    triggerNotification("Mapeamento inteligente ativo. Clique nos objetos.");
   };
 
   const handleBackToSlider = () => {
@@ -383,6 +543,12 @@ function App() {
           onLoadDemo={handleLoadDemo}
           onReset={() => setPhase('setup')}
           onOpenKeysModal={() => setShowKeysModal(true)}
+          
+          // API Mapping states passed to PreviewArea
+          roomData={roomData}
+          setRoomData={setRoomData}
+          editorLoading={editorLoading}
+          editorError={editorError}
         />
       </main>
 
