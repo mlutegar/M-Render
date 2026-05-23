@@ -350,13 +350,9 @@ export default function RenderIA() {
             <div className="r-logo">Render<em>IA</em></div>
             <div className="r-sub">SKETCHUP → RENDER FOTORREALISTA · OPENAI GPT‑IMAGE‑1</div>
           </div>
-          <button className="r-key-btn" onClick={openKeyModal}>
-            <span
-              className="r-key-dot"
-              style={{ background: keyOk ? "#3a6040" : "#6a2020" }}
-            />
-            {keyOk ? "API key ativa" : "Configurar API key"}
-          </button>
+          <span className="r-badge" style={{ fontSize: "0.65rem", padding: "4px 10px" }}>
+            ● API configurada
+          </span>
         </div>
 
         <div className="r-body">
