@@ -422,8 +422,7 @@ export default function RenderIA() {
               <button
                 className="r-gen"
                 onClick={handleGenerate}
-                disabled={!image || isLoading || !keyOk}
-                title={!keyOk ? "Configure a API key da OpenAI primeiro" : ""}
+                disabled={!image || isLoading}
               >
                 {isLoading ? (
                   <><div className="r-mini-spin" /> Gerando render…</>
