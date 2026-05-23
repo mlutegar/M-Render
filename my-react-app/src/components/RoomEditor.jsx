@@ -100,36 +100,44 @@ function Editable({ value, onChange, multiline, mono, size = 13 }) {
 }
 
 function ColorField({ hex, name, onHexChange, onNameChange }) {
-  const pickerRef = useRef();
   const safe = isValidHex(hex) ? hex : "#888888";
 
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <button
-        onClick={() => pickerRef.current?.click()}
-        title={`Alterar cor: ${hex}`}
-        style={{
-          width: 24, height: 24, minWidth: 24,
-          borderRadius: "50%",
-          background: safe,
-          border: "2px solid rgba(255,255,255,0.1)",
-          cursor: "pointer",
-          padding: 0,
-          flexShrink: 0,
-          boxShadow: "var(--shadow-sm)",
-          transition: "transform 0.1s",
-        }}
-        onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.15)")}
-        onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-      />
-      <input
-        ref={pickerRef}
-        type="color"
-        value={safe}
-        onChange={(e) => onHexChange(e.target.value)}
-        style={{ position: "absolute", opacity: 0, width: 0, height: 0, pointerEvents: "none" }}
-        tabIndex={-1}
-      />
+      <div style={{ 
+        width: 24, 
+        height: 24, 
+        minWidth: 24, 
+        position: 'relative',
+        borderRadius: '50%',
+        overflow: 'hidden',
+        boxShadow: "var(--shadow-sm)",
+        border: "2px solid rgba(255, 255, 255, 0.15)",
+        cursor: "pointer",
+        flexShrink: 0,
+        transition: "transform 0.15s ease",
+      }}
+      onMouseEnter={(e) => (e.currentTarget.style.transform = "scale(1.15)")}
+      onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
+      >
+        <input
+          type="color"
+          value={safe}
+          onChange={(e) => onHexChange(e.target.value)}
+          style={{
+            position: 'absolute',
+            top: '-4px',
+            left: '-4px',
+            width: '32px',
+            height: '32px',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer',
+            background: 'none',
+            WebkitAppearance: 'none'
+          }}
+        />
+      </div>
       <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: '2px' }}>
         <div>
           <Editable value={hex} onChange={onHexChange} mono size={11} />
