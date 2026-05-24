@@ -165,13 +165,13 @@ export default function PreviewArea({
 
       {/* 4. DEEP INTERACTIVE EDITOR STATE */}
       {phase === 'editor' && (
-        <div style={{ display: 'flex', width: '100%', height: '100%', overflow: 'hidden' }}>
-          
+        <div className="editor-layout" style={{ display: 'flex', width: '100%', height: '100%', overflow: 'hidden' }}>
+
           {/* Left panel: Render image preview (40% width) */}
-          <div style={{ 
-            width: '40%', 
-            height: '100%', 
-            position: 'relative', 
+          <div className="editor-image-panel" style={{
+            width: '40%',
+            height: '100%',
+            position: 'relative',
             borderRight: '1px solid var(--border-primary)',
             backgroundColor: '#050607'
           }}>
