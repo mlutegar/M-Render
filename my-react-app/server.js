@@ -72,6 +72,52 @@ app.post("/api/render", upload.single("image"), async (req, res) => {
   }
 });
 
+/* ── /api/analyze-room ───────────────────────────────── */
+app.post("/api/analyze-room", async (req, res) => {
+  try {
+    const openaiKey = process.env.OPENAI_API_KEY || process.env.VITE_OPENAI_KEY;
+    if (!openaiKey) return res.status(500).json({ error: "API key não configurada no servidor." });
+
+    const { image, prompt } = req.body;
+    if (!image) return res.status(400).json({ error: "Nenhuma imagem enviada." });
+
+    console.log("→ Analisando ambiente com GPT-4o Vision…");
+
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${openaiKey}`,
+      },
+      body: JSON.stringify({
+        model: "gpt-4o",
+        response_format: { type: "json_object" },
+        messages: [{
+          role: "user",
+          content: [
+            { type: "text", text: prompt },
+            { type: "image_url", image_url: { url: image } },
+          ],
+        }],
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+      console.error("OpenAI Vision error:", data);
+      return res.status(response.status).json({ error: data.error?.message || "Erro no GPT-4o Vision." });
+    }
+
+    const content = data.choices?.[0]?.message?.content;
+    if (!content) return res.status(500).json({ error: "Resposta vazia do GPT-4o." });
+
+    res.json({ result: content });
+  } catch (err) {
+    console.error("Server error (analyze-room):", err);
+    res.status(500).json({ error: err.message });
+  }
+});
+
 /* ── Em produção: serve o build do React ────────────── */
 if (isProd) {
   const distPath = path.join(__dirname, "dist");
