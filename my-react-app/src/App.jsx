@@ -112,14 +112,8 @@ function App() {
   const [phase, setPhase] = useState('setup');
   const [log, setLog] = useState('');
   
-  // API Keys (fetched from LocalStorage)
-  const [openaiKey, setOpenaiKey] = useState(
-    () => localStorage.getItem("openaiKey") || import.meta.env.VITE_OPENAI_KEY || ""
-  );
+  // A API key fica 100% no servidor — o frontend não precisa dela
   const [showKeysModal, setShowKeysModal] = useState(false);
-
-  // Save keys to localStorage
-  useEffect(() => { localStorage.setItem("openaiKey", openaiKey); }, [openaiKey]);
 
   // Model file details (upload screenshot as image)
   const [file, setFile] = useState(null);
