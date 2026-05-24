@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 
-export default function RenderSlider({ beforeImage, afterImage }) {
+export default function RenderSlider({ beforeImage, afterImage, afterImageStyle }) {
   const [sliderPosition, setSliderPosition] = useState(50); // percentage (0-100)
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef(null);
@@ -73,6 +73,7 @@ export default function RenderSlider({ beforeImage, afterImage }) {
         src={afterImage} 
         alt="Renderizado Realista" 
         className="slider-image after-image" 
+        style={afterImageStyle}
       />
       <div className="slider-label after">Render Realista</div>
       

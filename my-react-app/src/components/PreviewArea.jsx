@@ -66,6 +66,26 @@ export default function PreviewArea({
     return isDemoMode ? `${baseUrl}assets/sketchup_view.png` : file?.dataUrl;
   };
 
+  const getFilterStyle = () => {
+    if (isDemoMode) return 'none';
+    
+    let filters = [];
+    
+    // Simular iluminação
+    if (lighting === 'noturno') {
+      filters.push('brightness(0.35) saturate(0.85) sepia(0.2) hue-rotate(15deg)');
+    } else if (lighting === 'por_do_sol') {
+      filters.push('sepia(0.4) saturate(1.4) hue-rotate(-15deg) brightness(0.9)');
+    }
+    
+    // Simular troca de material do sofá
+    if (activeMaterial === 'camel_leather') {
+      filters.push('sepia(0.25) saturate(1.2) hue-rotate(-8deg)');
+    }
+    
+    return filters.length > 0 ? filters.join(' ') : 'none';
+  };
+
   const isLoading = phase === 'analyzing' || phase === 'generating' || phase === 'rendering';
 
   return (
@@ -141,6 +161,7 @@ export default function PreviewArea({
           <RenderSlider 
             beforeImage={getBeforeImage()}
             afterImage={getRenderImage()}
+            afterImageStyle={{ filter: getFilterStyle(), transition: 'filter 0.3s ease' }}
           />
 
           {/* Floating Action dialogue card */}
@@ -199,7 +220,13 @@ export default function PreviewArea({
             <img 
               src={getRenderImage()} 
               alt="Mrender Editor" 
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              style={{ 
+                width: '100%', 
+                height: '100%', 
+                objectFit: 'cover',
+                filter: getFilterStyle(),
+                transition: 'filter 0.3s ease'
+              }}
             />
 
             {/* Hover hotspots map (Only active in Demo Mode to guarantee visual alignment) */}
