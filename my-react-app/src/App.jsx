@@ -509,7 +509,7 @@ function App() {
         />
       </main>
 
-      {/* KEY CONFIGURATION MODAL (Glassmorphism Overlay) */}
+      {/* INFO MODAL */}
       {showKeysModal && (
         <div className="r-overlay" onClick={() => setShowKeysModal(false)}>
           <div className="r-modal" onClick={(e) => e.stopPropagation()} style={{
@@ -518,42 +518,28 @@ function App() {
             borderRadius: '12px',
             boxShadow: 'var(--shadow-lg)'
           }}>
-            <h3 className="r-modal-title" style={{ color: 'var(--text-primary)' }}>Configurações de API</h3>
-            <p className="r-modal-sub" style={{ color: 'var(--text-secondary)' }}>
-              Insira sua chave de API abaixo para conectar a aplicação ao <strong>OpenAI (ChatGPT e DALL‑E)</strong>.
+            <h3 className="r-modal-title" style={{ color: 'var(--text-primary)' }}>Configuração de API</h3>
+            <p className="r-modal-sub" style={{ color: 'var(--text-secondary)', marginBottom: '16px' }}>
+              A integração com a <strong>OpenAI (gpt‑image‑1)</strong> já está configurada no servidor.<br />
+              Nenhuma chave é necessária para usar o app.
             </p>
-
-            <div className="control-group" style={{ marginBottom: '16px' }}>
-              <label className="r-in-label" style={{ color: 'var(--text-secondary)' }}>Chave OpenAI API</label>
-              <input 
-                className="r-input" 
-                type="password" 
-                placeholder="sk-proj-..." 
-                value={openaiKey}
-                onChange={(e) => setOpenaiKey(e.target.value)}
-                style={{
-                  backgroundColor: 'var(--bg-base)',
-                  border: '1px solid var(--border-primary)',
-                  color: 'var(--text-primary)',
-                  borderRadius: '6px'
-                }}
-              />
+            <div style={{
+              padding: '10px 14px',
+              backgroundColor: 'rgba(16,185,129,0.08)',
+              border: '1px solid rgba(16,185,129,0.2)',
+              borderRadius: '8px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '10px',
+              marginBottom: '20px'
+            }}>
+              <span className="status-dot active" style={{ backgroundColor: 'var(--success)', boxShadow: '0 0 6px var(--success)', flexShrink: 0 }}></span>
+              <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>API OpenAI configurada e pronta para uso</span>
             </div>
-
-            <p className="r-modal-note" style={{ color: 'var(--text-muted)' }}>
-              * Sua chave fica guardada de forma segura apenas no navegador atual (LocalStorage) e é enviada diretamente para o servidor proxy local. Se a chave estiver configurada no arquivo <code>.env.local</code> do servidor, você pode deixar este campo em branco.
-            </p>
-
             <div className="r-modal-btns">
-              <button className="r-cancel" onClick={() => setShowKeysModal(false)}>Fechar</button>
-              <button className="r-save" onClick={() => {
-                setShowKeysModal(false);
-                triggerNotification("Configurações salvas.");
-              }} style={{
-                backgroundColor: 'var(--accent)',
-                color: '#000',
-                fontWeight: '700'
-              }}>Salvar e Fechar</button>
+              <button className="r-save" onClick={() => setShowKeysModal(false)} style={{
+                backgroundColor: 'var(--accent)', color: '#000', fontWeight: '700'
+              }}>Fechar</button>
             </div>
           </div>
         </div>
