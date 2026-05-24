@@ -113,13 +113,17 @@ app.post("/api/analyze-room", async (req, res) => {
     });
 
     const data = await response.json();
+    console.log("OpenAI Vision raw response:", JSON.stringify(data));
     if (!response.ok) {
       console.error("OpenAI Vision error:", data);
       return res.status(response.status).json({ error: data.error?.message || "Erro no GPT-4o Vision." });
     }
 
     const content = data.choices?.[0]?.message?.content;
-    if (!content) return res.status(500).json({ error: "Resposta vazia do GPT-4o." });
+    if (!content) {
+      console.warn("OpenAI Vision returned response ok but choices content is empty/undefined. choices:", JSON.stringify(data.choices));
+      return res.status(500).json({ error: "Resposta vazia do GPT-4o." });
+    }
 
     res.json({ result: content });
   } catch (err) {

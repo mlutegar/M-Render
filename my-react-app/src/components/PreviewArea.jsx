@@ -25,7 +25,8 @@ export default function PreviewArea({
   setRoomData,
   editorLoading,
   editorError,
-  onImageClick
+  onImageClick,
+  onRetryCustomize
 }) {
   const [hoveredHotspot, setHoveredHotspot] = useState(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
@@ -402,6 +403,11 @@ export default function PreviewArea({
                   <button onClick={onReset} className="btn-prompt-no">
                     Voltar
                   </button>
+                  {onRetryCustomize && (
+                    <button onClick={onRetryCustomize} className="btn-prompt-yes" style={{ margin: 0 }}>
+                      Tentar Novamente
+                    </button>
+                  )}
                 </div>
               </div>
             ) : (

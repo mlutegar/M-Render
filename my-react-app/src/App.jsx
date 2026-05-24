@@ -338,13 +338,10 @@ function App() {
       setEditorLoading(false);
       triggerNotification("Elementos da imagem mapeados!");
     } catch (err) {
-      console.warn("Falha ao chamar API OpenAI, usando dados simulados para teste local:", err);
-      // Fallback para dados fictícios estruturados de forma que o editor de materiais continue testável sem API key
-      setTimeout(() => {
-        setRoomData(GENERIC_FALLBACK_DATA);
-        setEditorLoading(false);
-        triggerNotification("Modo teste: Mapeamento simulado carregado!");
-      }, 1000);
+      console.error("Falha ao chamar API OpenAI:", err);
+      setEditorError(err.message);
+      setEditorLoading(false);
+      triggerNotification("Falha no mapeamento.");
     }
   };
 
@@ -469,13 +466,18 @@ function App() {
       setEditorLoading(false);
       triggerNotification("Elementos do render mapeados com sucesso!");
     } catch (err) {
-      console.warn("Falha ao chamar API OpenAI, usando dados simulados para teste local:", err);
-      // Fallback para dados fictícios estruturados de forma que o editor de materiais continue testável sem API key
-      setTimeout(() => {
-        setRoomData(GENERIC_FALLBACK_DATA);
-        setEditorLoading(false);
-        triggerNotification("Modo teste: Mapeamento simulado carregado!");
-      }, 1000);
+      console.error("Falha ao chamar API OpenAI:", err);
+      setEditorError(err.message);
+      setEditorLoading(false);
+      triggerNotification("Falha no mapeamento.");
+    }
+  };
+
+  const handleRetryMapping = () => {
+    if (result) {
+      handleEnterEditor();
+    } else {
+      handleDirectCustomize();
     }
   };
 
@@ -676,6 +678,7 @@ function App() {
             editorLoading={editorLoading}
             editorError={editorError}
             onImageClick={handleImageClick}
+            onRetryCustomize={handleRetryMapping}
           />
         </div>
       </main>
