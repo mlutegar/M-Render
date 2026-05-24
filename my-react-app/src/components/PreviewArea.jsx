@@ -223,7 +223,7 @@ export default function PreviewArea({
               style={{ 
                 width: '100%', 
                 height: '100%', 
-                objectFit: 'cover',
+                objectFit: 'contain',
                 filter: getFilterStyle(),
                 transition: 'filter 0.3s ease'
               }}
