@@ -3,7 +3,8 @@
     "allow": [
       "Bash(npm create *)",
       "Bash(npm install *)",
-      "PowerShell(git checkout *)"
+      "PowerShell(git checkout *)",
+      "WebFetch(domain:mlutegar.github.io)"
     ]
   }
 }

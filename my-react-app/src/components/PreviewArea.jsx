@@ -346,12 +346,12 @@ export default function PreviewArea({
             <p className="blueprint-desc" style={{ color: 'var(--text-primary)', fontFamily: 'monospace', fontSize: '12px' }}>
               {log || "Falha desconhecida na API externa de renderização."}
             </p>
+            <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '8px', maxWidth: '320px' }}>
+              O servidor de renderização pode estar iniciando (aguarde ~30s) ou ainda não estar configurado.
+            </p>
             <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
               <button onClick={onReset} className="btn-prompt-no">
-                Voltar
-              </button>
-              <button onClick={onOpenKeysModal} className="btn-prompt-yes" style={{ backgroundColor: '#ef4444', color: '#fff' }}>
-                Verificar Chaves de API
+                Voltar e Tentar Novamente
               </button>
             </div>
           </div>
