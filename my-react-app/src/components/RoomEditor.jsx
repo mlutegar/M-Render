@@ -152,9 +152,17 @@ function ColorField({ hex, name, onHexChange, onNameChange }) {
 
 function ObjectCard({ obj, index, onUpdate, isSelected, onCardSelect }) {
   const safe = isValidHex(obj.color.hex_aproximado) ? obj.color.hex_aproximado : "#999";
+  const cardRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (isSelected && cardRef.current) {
+      cardRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [isSelected]);
 
   return (
     <div
+      ref={cardRef}
       onClick={onCardSelect}
       style={{
         background: "var(--bg-panel)",
@@ -232,10 +240,9 @@ export default function RoomEditor({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Helper check to see if an object card should be highlighted
-  // based on the selectedObject hotspot from App/PreviewArea
   const isCardSelected = (objName) => {
     if (!selectedObject) return false;
+    if (selectedObject.name === objName) return true;
     const nameLow = objName.toLowerCase();
     const activeId = selectedObject.id;
 

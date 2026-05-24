@@ -20,7 +20,8 @@ export default function Sidebar({
   setActiveMaterial,
   onBackToSlider,
   hasKeys,
-  onOpenKeysModal
+  onOpenKeysModal,
+  onUpdateRender
 }) {
 
   const presetsList = [
@@ -320,6 +321,27 @@ export default function Sidebar({
                 </div>
               </div>
             )}
+
+            {/* Botão Atualizar Imagem */}
+            <div style={{
+              marginTop: '20px',
+              paddingTop: '20px',
+              borderTop: '1px solid var(--border-primary)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: '8px'
+            }}>
+              <button
+                className="btn-render"
+                onClick={onUpdateRender}
+                style={{ width: '100%', margin: 0 }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+                </svg>
+                Atualizar Imagem
+              </button>
+            </div>
           </>
         )}
 

@@ -24,7 +24,8 @@ export default function PreviewArea({
   roomData,
   setRoomData,
   editorLoading,
-  editorError
+  editorError,
+  onImageClick
 }) {
   const [hoveredHotspot, setHoveredHotspot] = useState(null);
   const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
@@ -84,6 +85,14 @@ export default function PreviewArea({
     }
     
     return filters.length > 0 ? filters.join(' ') : 'none';
+  };
+
+  const handleLocalImageClick = (e) => {
+    if (isDemoMode || !onImageClick) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = ((e.clientX - rect.left) / rect.width) * 100;
+    const clickY = ((e.clientY - rect.top) / rect.height) * 100;
+    onImageClick(clickX, clickY);
   };
 
   const isLoading = phase === 'analyzing' || phase === 'generating' || phase === 'rendering';
@@ -217,17 +226,68 @@ export default function PreviewArea({
               </div>
             )}
             
-            <img 
-              src={getRenderImage()} 
-              alt="Mrender Editor" 
-              style={{ 
-                width: '100%', 
-                height: '100%', 
-                objectFit: 'contain',
-                filter: getFilterStyle(),
-                transition: 'filter 0.3s ease'
-              }}
-            />
+            <div style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              position: 'relative'
+            }}>
+              <div 
+                style={{ 
+                  position: 'relative', 
+                  display: 'inline-block',
+                  maxWidth: '100%',
+                  maxHeight: '100%',
+                  cursor: isDemoMode ? 'default' : 'pointer'
+                }}
+                onClick={handleLocalImageClick}
+              >
+                <img 
+                  src={getRenderImage()} 
+                  alt="Mrender Editor" 
+                  style={{ 
+                    maxWidth: '100%', 
+                    maxHeight: '100%', 
+                    width: 'auto',
+                    height: 'auto',
+                    display: 'block',
+                    filter: getFilterStyle(),
+                    transition: 'filter 0.3s ease'
+                  }}
+                />
+                
+                {/* Highlight bounding box of the selected object when not in Demo Mode */}
+                {!isDemoMode && selectedObject && (() => {
+                  const found = roomData?.objects?.find(o => {
+                    const nameLow = o.name.toLowerCase();
+                    const activeId = selectedObject.id;
+                    if (activeId === 'sofa' && (nameLow.includes('sofa') || nameLow.includes('cama') || nameLow.includes('assento'))) return true;
+                    if (activeId === 'floor' && (nameLow.includes('piso') || nameLow.includes('chão') || nameLow.includes('floor'))) return true;
+                    if (activeId === 'fireplace' && (nameLow.includes('lareira') || nameLow.includes('fireplace') || nameLow.includes('aquecedor'))) return true;
+                    if (activeId === 'lamp' && (nameLow.includes('luminaria') || nameLow.includes('lamp') || nameLow.includes('pendente') || nameLow.includes('iluminação'))) return true;
+                    return o.name === selectedObject.name;
+                  });
+                  
+                  if (found && found.bbox) {
+                    const [ymin, xmin, ymax, xmax] = found.bbox;
+                    return (
+                      <div 
+                        className="selected-bbox-overlay"
+                        style={{
+                          top: `${ymin}%`,
+                          left: `${xmin}%`,
+                          width: `${xmax - xmin}%`,
+                          height: `${ymax - ymin}%`
+                        }}
+                      />
+                    );
+                  }
+                  return null;
+                })()}
+              </div>
+            </div>
 
             {/* Hover hotspots map (Only active in Demo Mode to guarantee visual alignment) */}
             {isDemoMode && (

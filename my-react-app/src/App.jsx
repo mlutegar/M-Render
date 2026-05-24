@@ -72,10 +72,10 @@ const GENERIC_FALLBACK_DATA = {
     materiais_predominantes: ["madeira", "tecido", "metal", "pintura fosca"]
   },
   objects: [
-    { name: "sofá principal", color: { nome: "cinza basalto", hex_aproximado: "#5f656d" }, material: "linho cinza texturizado", descricao: "Móvel estofado principal posicionado no ambiente." },
-    { name: "piso", color: { nome: "madeira carvalho", hex_aproximado: "#d2b48c" }, material: "madeira de carvalho", descricao: "Revestimento do chão do ambiente." },
-    { name: "paredes", color: { nome: "branco suave", hex_aproximado: "#f3f4f6" }, material: "pintura lisa fosca", descricao: "Superfícies de alvenaria do espaço." },
-    { name: "iluminação", color: { nome: "luz quente", hex_aproximado: "#fef08a" }, material: "metal e vidro", descricao: "Pontos de luz decorativos ou funcionais." }
+    { name: "sofá principal", bbox: [45, 20, 85, 80], color: { nome: "cinza basalto", hex_aproximado: "#5f656d" }, material: "linho cinza texturizado", descricao: "Móvel estofado principal posicionado no ambiente." },
+    { name: "piso", bbox: [75, 0, 100, 100], color: { nome: "madeira carvalho", hex_aproximado: "#d2b48c" }, material: "madeira de carvalho", descricao: "Revestimento do chão do ambiente." },
+    { name: "paredes", bbox: [0, 0, 75, 100], color: { nome: "branco suave", hex_aproximado: "#f3f4f6" }, material: "pintura lisa fosca", descricao: "Superfícies de alvenaria do espaço." },
+    { name: "iluminação", bbox: [10, 40, 35, 60], color: { nome: "luz quente", hex_aproximado: "#fef08a" }, material: "metal e vidro", descricao: "Pontos de luz decorativos ou funcionais." }
   ]
 };
 
@@ -348,6 +348,73 @@ function App() {
     }
   };
 
+  const buildPromptFromRoomData = (data) => {
+    if (!data) return "Interior design render, modern style";
+    
+    let styleText = "";
+    if (data.room_style) {
+      const styleName = data.room_style.nome || "";
+      const styleDesc = data.room_style.descricao || "";
+      styleText = `Architectural photo of a room with ${styleName} style. ${styleDesc}`;
+    }
+    
+    let objectsText = "";
+    if (data.objects && data.objects.length > 0) {
+      const parts = data.objects.map(obj => {
+        let text = obj.name;
+        if (obj.color && obj.color.nome) {
+          text += ` in ${obj.color.nome} color`;
+        }
+        if (obj.material) {
+          text += ` made of ${obj.material}`;
+        }
+        return text;
+      });
+      objectsText = " Features: " + parts.join(", ") + ".";
+    }
+    
+    let finalPrompt = `${styleText}${objectsText} Photorealistic architectural visualization, 8k.`;
+    if (finalPrompt.length > 950) {
+      finalPrompt = finalPrompt.substring(0, 950) + "...";
+    }
+    return finalPrompt;
+  };
+
+  const handleUpdateRender = async () => {
+    if (isDemoMode) {
+      setPhase('generating');
+      setLog("Simulando atualização do render em modo demonstração...");
+      setTimeout(() => {
+        setPhase('editor');
+        triggerNotification("Demo Mode: Imagem atualizada de forma simulada!");
+      }, 1500);
+      return;
+    }
+
+    const imageToUpdate = result || file?.dataUrl;
+    if (!imageToUpdate) {
+      triggerNotification("Nenhuma imagem para atualizar.");
+      return;
+    }
+
+    try {
+      setPhase('generating');
+      setLog("Atualizando render com OpenAI DALL‑E...");
+      
+      const prompt = buildPromptFromRoomData(roomData);
+      setGeneratedPrompt(prompt);
+
+      const updatedImage = await renderWithOpenAI(imageToUpdate, prompt);
+      setResult(updatedImage);
+      setPhase('editor');
+      triggerNotification("Imagem atualizada com sucesso!");
+    } catch (err) {
+      setPhase('editor');
+      triggerNotification(`Erro ao atualizar: ${err.message}`);
+      console.error(err);
+    }
+  };
+
   // API Call: OpenAI Chat GPT Vision maps the rendered image room contents to JSON
   const analyzeRoomWithOpenAI = async (base64Image) => {
     const API_BASE = import.meta.env.VITE_API_URL || "";
@@ -356,7 +423,7 @@ function App() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         image: base64Image,
-        prompt: `Analise esta imagem de design de interiores e converta todas as informações visuais em um formato JSON estruturado e altamente detalhado. Concentre-se especificamente em isolar objetos individuais. Para cada objeto principal, extraia sua cor precisa (usando nomes descritivos ou códigos hexadecimais) e seu material exato (ex: couro fosco, aço escovado, madeira de carvalho). Inclua JSON para 'room_style', e um array 'objects' contendo 'name', 'color' (com subcampos 'nome' e 'hex_aproximado'), 'material' e 'descricao'. Produza APENAS um JSON válido. Extraia em português esses dados.`
+        prompt: `Analise esta imagem de design de interiores e converta todas as informações visuais em um formato JSON estruturado e altamente detalhado. Concentre-se especificamente em isolar objetos individuais. Para cada objeto principal, extraia sua cor precisa (usando nomes descritivos ou códigos hexadecimais), seu material exato (ex: couro fosco, aço escovado, madeira de carvalho) e sua localização (caixa delimitadora). Inclua JSON para 'room_style', e um array 'objects' contendo 'name', 'bbox' (um array com [ymin, xmin, ymax, xmax] com valores percentuais normalizados de 0 a 100 indicando a localização aproximada do objeto na imagem), 'color' (com subcampos 'nome' e 'hex_aproximado'), 'material' e 'descricao'. Produza APENAS um JSON válido. Extraia em português esses dados.`
       })
     });
 
@@ -453,6 +520,32 @@ function App() {
   const handleBackToSlider = () => {
     setPhase('slider');
     setSelectedObject(null);
+  };
+
+  const handleImageClick = (clickX, clickY) => {
+    if (!roomData || !roomData.objects) return;
+    
+    const found = roomData.objects.find((obj) => {
+      if (!obj.bbox) return false;
+      const [ymin, xmin, ymax, xmax] = obj.bbox;
+      return clickX >= xmin && clickX <= xmax && clickY >= ymin && clickY <= ymax;
+    });
+
+    if (found) {
+      const nameLow = found.name.toLowerCase();
+      let mockId = 'other';
+      if (nameLow.includes('sofa') || nameLow.includes('cama') || nameLow.includes('assento')) mockId = 'sofa';
+      else if (nameLow.includes('piso') || nameLow.includes('chão') || nameLow.includes('floor')) mockId = 'floor';
+      else if (nameLow.includes('lareira') || nameLow.includes('fireplace')) mockId = 'fireplace';
+      else if (nameLow.includes('luminaria') || nameLow.includes('lamp') || nameLow.includes('pendente') || nameLow.includes('iluminação')) mockId = 'lamp';
+
+      setSelectedObject({
+        id: mockId,
+        name: found.name,
+        type: mockId === 'sofa' ? 'Mobiliário' : mockId === 'floor' ? 'Material' : mockId === 'lamp' ? 'Iluminação' : 'Estrutura'
+      });
+      triggerNotification(`Selecionado: ${found.name}`);
+    }
   };
 
   return (
@@ -555,6 +648,7 @@ function App() {
             onBackToSlider={handleBackToSlider}
             hasKeys={true}
             onOpenKeysModal={() => setShowKeysModal(true)}
+            onUpdateRender={handleUpdateRender}
           />
         </div>
 
@@ -581,6 +675,7 @@ function App() {
             setRoomData={setRoomData}
             editorLoading={editorLoading}
             editorError={editorError}
+            onImageClick={handleImageClick}
           />
         </div>
       </main>
