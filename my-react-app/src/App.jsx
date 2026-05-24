@@ -227,6 +227,15 @@ function App() {
     return `data:image/png;base64,${b64}`;
   };
 
+  // Auto-switch mobile view conforme o phase
+  useEffect(() => {
+    if (phase === 'analyzing' || phase === 'generating' || phase === 'slider' || phase === 'editor') {
+      setMobileView('preview');
+    } else if (phase === 'setup' || phase === 'error') {
+      setMobileView('controls');
+    }
+  }, [phase]);
+
   // Main Generator orchestrator
   const handleRenderStart = async () => {
     if (!file || !file.dataUrl) return;
