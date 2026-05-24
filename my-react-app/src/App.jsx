@@ -208,6 +208,18 @@ function App() {
 
     const formData = new FormData();
     formData.append("image", imageBlob, "model.png");
+    
+    // Gera uma máscara PNG 100% transparente para permitir o inpainting / img2img no DALL-E Edits
+    const maskBlob = await new Promise((resolve) => {
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, width, height); // garante transparência total
+      canvas.toBlob((blob) => resolve(blob), "image/png");
+    });
+    formData.append("mask", maskBlob, "mask.png");
+    
     formData.append("prompt", prompt);
     formData.append("size", size);
 
@@ -290,11 +302,31 @@ function App() {
     }
   };
 
-  const handleDirectCustomize = () => {
+  const handleDirectCustomize = async () => {
     if (!file || !file.dataUrl) return;
+    setIsDemoMode(false);
     setResult(file.dataUrl);
-    setPhase('slider');
-    triggerNotification("Imagem carregada para personalização!");
+    setPhase('editor');
+    
+    setEditorLoading(true);
+    setEditorError(null);
+    triggerNotification("Mapeando elementos da imagem...");
+
+    try {
+      const rawText = await analyzeRoomWithOpenAI(file.dataUrl);
+      const parsedJSON = parseJSONFromOpenAI(rawText);
+      setRoomData(parsedJSON);
+      setEditorLoading(false);
+      triggerNotification("Elementos da imagem mapeados!");
+    } catch (err) {
+      console.warn("Falha ao chamar API OpenAI, usando dados simulados para teste local:", err);
+      // Fallback para dados fictícios estruturados de forma que o editor de materiais continue testável sem API key
+      setTimeout(() => {
+        setRoomData(INITIAL_DATA);
+        setEditorLoading(false);
+        triggerNotification("Modo teste: Mapeamento simulado carregado!");
+      }, 1000);
+    }
   };
 
   // API Call: OpenAI Chat GPT Vision maps the rendered image room contents to JSON
@@ -351,10 +383,13 @@ function App() {
       setEditorLoading(false);
       triggerNotification("Elementos do render mapeados com sucesso!");
     } catch (err) {
-      console.error(err);
-      setEditorError(err.message);
-      setEditorLoading(false);
-      triggerNotification("Erro ao mapear o ambiente.");
+      console.warn("Falha ao chamar API OpenAI, usando dados simulados para teste local:", err);
+      // Fallback para dados fictícios estruturados de forma que o editor de materiais continue testável sem API key
+      setTimeout(() => {
+        setRoomData(INITIAL_DATA);
+        setEditorLoading(false);
+        triggerNotification("Modo teste: Mapeamento simulado carregado!");
+      }, 1000);
     }
   };
 

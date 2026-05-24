@@ -33,11 +33,14 @@ app.get("/api/health", (req, res) => {
 });
 
 /* ── /api/render ─────────────────────────────────────── */
-app.post("/api/render", upload.single("image"), async (req, res) => {
+app.post("/api/render", upload.fields([{ name: "image", maxCount: 1 }, { name: "mask", maxCount: 1 }]), async (req, res) => {
   try {
     const openaiKey = process.env.OPENAI_API_KEY || process.env.VITE_OPENAI_KEY;
     if (!openaiKey) return res.status(500).json({ error: "API key não configurada no servidor." });
-    if (!req.file)  return res.status(400).json({ error: "Nenhuma imagem enviada." });
+    
+    const imageFile = req.files?.["image"]?.[0];
+    const maskFile = req.files?.["mask"]?.[0];
+    if (!imageFile) return res.status(400).json({ error: "Nenhuma imagem enviada." });
 
     const prompt = req.body.prompt || "";
     const VALID_SIZES = ["1024x1024", "1536x1024", "1024x1536"];
@@ -46,7 +49,14 @@ app.post("/api/render", upload.single("image"), async (req, res) => {
     console.log(`→ Render | size: ${size}`);
 
     const form = new FormData();
-    form.append("image[]", req.file.buffer, { filename: "model.png", contentType: "image/png" });
+    // Envia tanto "image" quanto "image[]" para máxima compatibilidade
+    form.append("image", imageFile.buffer, { filename: "model.png", contentType: "image/png" });
+    form.append("image[]", imageFile.buffer, { filename: "model.png", contentType: "image/png" });
+    
+    if (maskFile) {
+      form.append("mask", maskFile.buffer, { filename: "mask.png", contentType: "image/png" });
+    }
+    
     form.append("prompt", prompt);
     form.append("model", "gpt-image-1");
     form.append("n", "1");
