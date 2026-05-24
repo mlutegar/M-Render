@@ -478,7 +478,7 @@ function App() {
           activeMaterial={activeMaterial}
           setActiveMaterial={setActiveMaterial}
           onBackToSlider={handleBackToSlider}
-          hasKeys={!!openaiKey}
+          hasKeys={true}
           onOpenKeysModal={() => setShowKeysModal(true)}
         />
 
