@@ -420,7 +420,16 @@ function App() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         image: base64Image,
-        prompt: `Analise esta imagem de design de interiores e converta todas as informações visuais em um formato JSON estruturado e altamente detalhado. Concentre-se especificamente em isolar objetos individuais. Para cada objeto principal, extraia sua cor precisa (usando nomes descritivos ou códigos hexadecimais), seu material exato (ex: couro fosco, aço escovado, madeira de carvalho) e sua localização (caixa delimitadora). Inclua JSON para 'room_style', e um array 'objects' contendo 'name', 'bbox' (um array com [ymin, xmin, ymax, xmax] com valores percentuais normalizados de 0 a 100 indicando a localização aproximada do objeto na imagem), 'color' (com subcampos 'nome' e 'hex_aproximado'), 'material' e 'descricao'. Produza APENAS um JSON válido. Extraia em português esses dados.`
+        prompt: `Analise esta imagem de design de interiores e converta todas as informações visuais em um formato JSON estruturado e altamente detalhado.
+Seja extremamente minucioso e exaustivo. Identifique e mapeie absolutamente TODOS os elementos visíveis na cena (ex: sofás, poltronas, cadeiras, almofadas, mesas de centro/lateral, piso, teto, paredes individuais, janelas, cortinas, quadros decorativos, plantas, vasos, luminárias pendentes, spots de luz, lareiras, tapetes, etc.). Não deixe nenhum objeto relevante de fora.
+Para cada elemento detectado, forneça:
+1. 'name': o nome descritivo em português.
+2. 'bbox': a caixa delimitadora precisa como [ymin, xmin, ymax, xmax] com valores percentuais inteiros de 0 a 100 indicando a posição exata daquele objeto na imagem. Garanta que os limites correspondam fielmente à silhueta do objeto.
+3. 'color': um objeto contendo 'nome' e 'hex_aproximado' da cor predominante.
+4. 'material': o material/textura predominante do elemento (ex: linho texturizado, madeira carvalho, vidro transparente, metal dourado, pintura fosca).
+5. 'descricao': uma breve descrição da função e posicionamento do item na composição.
+
+Retorne no formato JSON contendo a chave 'room_style' (estilo geral do ambiente) e o array 'objects' contendo todos os elementos identificados. Produza APENAS o JSON válido.`
       })
     });
 

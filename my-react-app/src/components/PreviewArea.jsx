@@ -198,9 +198,9 @@ export default function PreviewArea({
       {phase === 'editor' && (
         <div className="editor-layout" style={{ display: 'flex', width: '100%', height: '100%', overflow: 'hidden' }}>
 
-          {/* Left panel: Render image preview (40% width) */}
+          {/* Left panel: Render image preview (65% width) */}
           <div className="editor-image-panel" style={{
-            width: '40%',
+            width: '65%',
             height: '100%',
             position: 'relative',
             borderRight: '1px solid var(--border-primary)',
@@ -354,8 +354,8 @@ export default function PreviewArea({
             )}
           </div>
 
-          {/* Right panel: Room Style Editor panel (60% width) */}
-          <div className="editor-data-panel" style={{ width: '60%', height: '100%', overflowY: 'auto', backgroundColor: 'var(--bg-base)' }}>
+          {/* Right panel: Room Style Editor panel (35% width) */}
+          <div className="editor-data-panel" style={{ width: '35%', height: '100%', overflowY: 'auto', backgroundColor: 'var(--bg-base)' }}>
             {editorLoading ? (
               <div style={{ 
                 height: '100%', 
