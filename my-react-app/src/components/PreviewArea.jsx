@@ -267,7 +267,7 @@ export default function PreviewArea({
           </div>
 
           {/* Right panel: Room Style Editor panel (60% width) */}
-          <div style={{ width: '60%', height: '100%', overflowY: 'auto', backgroundColor: 'var(--bg-base)' }}>
+          <div className="editor-data-panel" style={{ width: '60%', height: '100%', overflowY: 'auto', backgroundColor: 'var(--bg-base)' }}>
             {editorLoading ? (
               <div style={{ 
                 height: '100%', 
