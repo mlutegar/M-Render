@@ -473,53 +473,80 @@ function App() {
       {/* WORKSPACE CONTENT */}
       <main className="workspace">
         {/* Sidebar Controls */}
-        <Sidebar 
-          phase={phase}
-          file={file}
-          onFileSelected={handleFileSelected}
-          onFileRemoved={handleFileRemoved}
-          lighting={lighting}
-          setLighting={setLighting}
-          preset={preset}
-          setPreset={setPreset}
-          quality={quality}
-          setQuality={setQuality}
-          onRenderStart={handleRenderStart}
-          selectedObject={selectedObject}
-          setSelectedObject={setSelectedObject}
-          activeMaterial={activeMaterial}
-          setActiveMaterial={setActiveMaterial}
-          onBackToSlider={handleBackToSlider}
-          hasKeys={true}
-          onOpenKeysModal={() => setShowKeysModal(true)}
-        />
+        <div className={mobileView === 'preview' ? 'mobile-hidden' : ''} style={{ display: 'contents' }}>
+          <Sidebar
+            phase={phase}
+            file={file}
+            onFileSelected={handleFileSelected}
+            onFileRemoved={handleFileRemoved}
+            lighting={lighting}
+            setLighting={setLighting}
+            preset={preset}
+            setPreset={setPreset}
+            quality={quality}
+            setQuality={setQuality}
+            onRenderStart={handleRenderStart}
+            selectedObject={selectedObject}
+            setSelectedObject={setSelectedObject}
+            activeMaterial={activeMaterial}
+            setActiveMaterial={setActiveMaterial}
+            onBackToSlider={handleBackToSlider}
+            hasKeys={true}
+            onOpenKeysModal={() => setShowKeysModal(true)}
+          />
+        </div>
 
         {/* Central Display Workspace */}
-        <PreviewArea 
-          phase={phase}
-          lighting={lighting}
-          file={file}
-          renderProgress={renderProgress}
-          onEnterEditor={handleEnterEditor}
-          selectedObject={selectedObject}
-          setSelectedObject={setSelectedObject}
-          activeMaterial={activeMaterial}
-          onExportRender={handleExportRender}
-          log={log}
-          result={result}
-          generatedPrompt={generatedPrompt}
-          isDemoMode={isDemoMode}
-          onLoadDemo={handleLoadDemo}
-          onReset={() => setPhase('setup')}
-          onOpenKeysModal={() => setShowKeysModal(true)}
-          
-          // API Mapping states passed to PreviewArea
-          roomData={roomData}
-          setRoomData={setRoomData}
-          editorLoading={editorLoading}
-          editorError={editorError}
-        />
+        <div className={mobileView === 'controls' ? 'mobile-hidden' : ''} style={{ display: 'contents' }}>
+          <PreviewArea
+            phase={phase}
+            lighting={lighting}
+            file={file}
+            renderProgress={renderProgress}
+            onEnterEditor={handleEnterEditor}
+            selectedObject={selectedObject}
+            setSelectedObject={setSelectedObject}
+            activeMaterial={activeMaterial}
+            onExportRender={handleExportRender}
+            log={log}
+            result={result}
+            generatedPrompt={generatedPrompt}
+            isDemoMode={isDemoMode}
+            onLoadDemo={handleLoadDemo}
+            onReset={() => setPhase('setup')}
+            onOpenKeysModal={() => setShowKeysModal(true)}
+            roomData={roomData}
+            setRoomData={setRoomData}
+            editorLoading={editorLoading}
+            editorError={editorError}
+          />
+        </div>
       </main>
+
+      {/* MOBILE BOTTOM NAV */}
+      <nav className="mobile-nav">
+        <button
+          className={`mobile-nav-btn ${mobileView === 'controls' ? 'active' : ''}`}
+          onClick={() => setMobileView('controls')}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="4" y1="6" x2="20" y2="6" />
+            <line x1="4" y1="12" x2="14" y2="12" />
+            <line x1="4" y1="18" x2="18" y2="18" />
+          </svg>
+          Configurar
+        </button>
+        <button
+          className={`mobile-nav-btn ${mobileView === 'preview' ? 'active' : ''}`}
+          onClick={() => setMobileView('preview')}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          Visualizar
+        </button>
+      </nav>
 
       {/* INFO MODAL */}
       {showKeysModal && (
