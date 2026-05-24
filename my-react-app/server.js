@@ -27,6 +27,11 @@ app.use(express.json({ limit: "50mb" }));
 
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20 * 1024 * 1024 } });
 
+/* ── Health check ────────────────────────────────────── */
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", model: "gpt-image-1" });
+});
+
 /* ── /api/render ─────────────────────────────────────── */
 app.post("/api/render", upload.single("image"), async (req, res) => {
   try {
