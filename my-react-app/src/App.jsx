@@ -111,7 +111,10 @@ function App() {
   // Navigation & Workflow States: 'setup' | 'analyzing' | 'generating' | 'slider' | 'editor' | 'error'
   const [phase, setPhase] = useState('setup');
   const [log, setLog] = useState('');
-  
+
+  // Mobile: qual painel está visível ('controls' | 'preview')
+  const [mobileView, setMobileView] = useState('controls');
+
   // A API key fica 100% no servidor — o frontend não precisa dela
   const [showKeysModal, setShowKeysModal] = useState(false);
 
