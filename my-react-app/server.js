@@ -16,10 +16,12 @@ const app = express();
 const PORT = process.env.PORT || 3001;
 const isProd = process.env.NODE_ENV === "production";
 
-// Em dev: só aceita o Vite local. Em produção: tudo está no mesmo domínio
-if (!isProd) {
-  app.use(cors({ origin: "http://localhost:5173" }));
-}
+// Origens permitidas: dev local + GitHub Pages
+const ALLOWED_ORIGINS = [
+  "http://localhost:5173",
+  "https://mlutegar.github.io",
+];
+app.use(cors({ origin: ALLOWED_ORIGINS }));
 
 app.use(express.json({ limit: "50mb" }));
 
