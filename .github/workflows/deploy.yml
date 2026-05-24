@@ -31,8 +31,8 @@ jobs:
       - name: Build
         working-directory: my-react-app
         env:
-          VITE_ANTHROPIC_KEY: ${{ secrets.VITE_ANTHROPIC_KEY }}
-          VITE_STABILITY_KEY: ${{ secrets.VITE_STABILITY_KEY }}
+          VITE_BASE_PATH: /M-Render/
+          VITE_API_URL: ${{ secrets.VITE_API_URL }}
         run: npm run build
 
       - uses: actions/configure-pages@v4
