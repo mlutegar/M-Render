@@ -315,9 +315,6 @@ export default function PreviewArea({
                   <button onClick={onReset} className="btn-prompt-no">
                     Voltar
                   </button>
-                  <button onClick={onOpenKeysModal} className="btn-prompt-yes" style={{ backgroundColor: '#ef4444', color: '#fff' }}>
-                    Verificar Chaves API
-                  </button>
                 </div>
               </div>
             ) : (
