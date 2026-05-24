@@ -1098,3 +1098,226 @@ button, input, select, textarea {
   90% { opacity: 1; }
   100% { top: 100%; opacity: 0; }
 }
+
+/* ─── MOBILE BOTTOM NAV (hidden on desktop) ─────────── */
+.mobile-nav {
+  display: none;
+}
+
+/* ─── MOBILE RESPONSIVE ─────────────────────────────── */
+@media (max-width: 768px) {
+  body {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  #root {
+    height: 100dvh;
+  }
+
+  .app-container {
+    height: 100dvh;
+  }
+
+  /* ── Header ── */
+  .app-header {
+    height: 52px;
+    padding: 0 14px;
+  }
+
+  .logo-text {
+    font-size: 15px;
+  }
+
+  /* Esconde badge de status no mobile */
+  .header-status .status-badge {
+    display: none;
+  }
+
+  /* ── Workspace: empilha sidebar + preview ── */
+  .workspace {
+    flex-direction: column;
+    height: calc(100dvh - 52px - 56px);
+    overflow: hidden;
+  }
+
+  /* Sidebar ocupa toda a largura */
+  .sidebar {
+    width: 100%;
+    height: 100%;
+    border-right: none;
+    border-bottom: none;
+  }
+
+  .sidebar-content {
+    padding: 16px;
+    gap: 20px;
+  }
+
+  /* Upload zone menor */
+  .upload-container {
+    padding: 20px 14px;
+  }
+
+  /* Preset 2 colunas (já era) */
+  .preset-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  /* Botão de render: mais fácil de tocar */
+  .btn-render {
+    padding: 15px 20px;
+    font-size: 14px;
+    border-radius: 12px;
+  }
+
+  /* ── Visibilidade mobile ── */
+  .mobile-hidden {
+    display: none !important;
+  }
+
+  /* ── Bottom navigation bar ── */
+  .mobile-nav {
+    display: flex;
+    height: 56px;
+    flex-shrink: 0;
+    background-color: var(--bg-surface);
+    border-top: 1px solid var(--border-primary);
+    z-index: 20;
+  }
+
+  .mobile-nav-btn {
+    flex: 1;
+    background: none;
+    border: none;
+    border-top: 2px solid transparent;
+    color: var(--text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .mobile-nav-btn.active {
+    color: var(--accent);
+    border-top-color: var(--accent);
+  }
+
+  .mobile-nav-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* ── Preview toolbar ── */
+  .preview-toolbar {
+    height: 44px;
+    padding: 0 12px;
+  }
+
+  .toolbar-info {
+    display: none;
+  }
+
+  .toolbar-actions {
+    width: 100%;
+    justify-content: flex-end;
+    gap: 6px;
+  }
+
+  .toolbar-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  /* ── Blueprint (estado vazio / erro) ── */
+  .blueprint-content {
+    padding: 28px 20px;
+    margin: 16px;
+    max-width: calc(100% - 32px);
+    gap: 16px;
+  }
+
+  .blueprint-title {
+    font-size: 17px;
+  }
+
+  .blueprint-desc {
+    font-size: 12px;
+  }
+
+  /* ── Prompt overlay no slider ── */
+  .prompt-overlay {
+    flex-direction: column;
+    bottom: 12px;
+    padding: 14px 16px;
+    gap: 12px;
+    width: calc(100% - 24px);
+    max-width: 100%;
+  }
+
+  .prompt-actions {
+    width: 100%;
+    flex-direction: row;
+  }
+
+  .prompt-actions .btn-prompt-no,
+  .prompt-actions .btn-prompt-yes {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+  }
+
+  /* ── Editor: layout empilhado ── */
+  .editor-layout {
+    flex-direction: column !important;
+  }
+
+  .editor-image-panel {
+    width: 100% !important;
+    height: 45vw !important;
+    min-height: 200px;
+    max-height: 280px;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border-primary) !important;
+    flex-shrink: 0;
+  }
+
+  .editor-data-panel {
+    width: 100% !important;
+    height: auto !important;
+    flex: 1 !important;
+  }
+
+  /* ── Loading stages: mais compacto ── */
+  .loading-stages {
+    width: 90%;
+    max-width: 260px;
+  }
+
+  .loading-status-text {
+    font-size: 13px;
+  }
+
+  /* ── Slider labels ── */
+  .slider-label {
+    top: 12px;
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  .slider-label.before { left: 10px; }
+  .slider-label.after  { right: 10px; }
+
+  /* ── Material grid ── */
+  .material-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
