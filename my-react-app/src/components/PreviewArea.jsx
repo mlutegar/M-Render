@@ -109,9 +109,9 @@ export default function PreviewArea({
           
           <div style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5)', textAlign: 'center' }}>
             <p className="loading-status-text">
-              {phase === 'analyzing' && "Claude Vision analisando a cena..."}
-              {phase === 'generating' && "Stability AI renderizando imagem..."}
-              {phase === 'rendering' && "Preparando renderizador local..."}
+              {phase === 'analyzing' && "Preparando modelo e prompt..."}
+              {phase === 'generating' && "OpenAI gpt‑image‑1 renderizando..."}
+              {phase === 'rendering' && "Processando imagem..."}
             </p>
             <p style={{ color: 'var(--accent)', fontSize: '11px', marginTop: '6px', fontFamily: 'monospace' }}>
               {log || "Processando matrizes de iluminação e profundidade..."}
@@ -121,15 +121,15 @@ export default function PreviewArea({
           <div className="loading-stages">
             <div className={`stage-item ${(phase === 'analyzing' || phase === 'rendering') ? 'active' : 'completed'}`}>
               <span className="stage-dot"></span>
-              <span>Análise Visual da Estrutura (Claude)</span>
+              <span>Preparando imagem e prompt</span>
             </div>
             <div className={`stage-item ${phase === 'generating' ? 'active' : (phase === 'slider' || result) ? 'completed' : ''}`}>
               <span className="stage-dot"></span>
-              <span>Render de Esboço para Realista (Stability)</span>
+              <span>Render fotorrealista (OpenAI)</span>
             </div>
             <div className={`stage-item ${phase === 'done' ? 'completed' : ''}`}>
               <span className="stage-dot"></span>
-              <span>Denoising e Pós-Processamento</span>
+              <span>Finalização e pós-processamento</span>
             </div>
           </div>
         </div>
