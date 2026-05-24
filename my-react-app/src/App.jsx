@@ -60,6 +60,25 @@ const INITIAL_DATA = {
   ]
 };
 
+const GENERIC_FALLBACK_DATA = {
+  room_style: {
+    nome: "ambiente contemporâneo",
+    descricao: "Ambiente moderno com paleta de cores neutras e iluminação natural suave.",
+    paleta_geral: [
+      { cor: "cinza claro", hex_aproximado: "#8e9196" },
+      { cor: "madeira natural", hex_aproximado: "#d2b48c" },
+      { cor: "branco suave", hex_aproximado: "#f3f4f6" }
+    ],
+    materiais_predominantes: ["madeira", "tecido", "metal", "pintura fosca"]
+  },
+  objects: [
+    { name: "sofá principal", color: { nome: "cinza basalto", hex_aproximado: "#5f656d" }, material: "linho cinza texturizado", descricao: "Móvel estofado principal posicionado no ambiente." },
+    { name: "piso", color: { nome: "madeira carvalho", hex_aproximado: "#d2b48c" }, material: "madeira de carvalho", descricao: "Revestimento do chão do ambiente." },
+    { name: "paredes", color: { nome: "branco suave", hex_aproximado: "#f3f4f6" }, material: "pintura lisa fosca", descricao: "Superfícies de alvenaria do espaço." },
+    { name: "iluminação", color: { nome: "luz quente", hex_aproximado: "#fef08a" }, material: "metal e vidro", descricao: "Pontos de luz decorativos ou funcionais." }
+  ]
+};
+
 // ══════════════════════════════════════════════════════════════
 // CLAUDE RESPONSE MARKDOWN PARSER
 /** Converte qualquer dataURL em PNG e retorna também as dimensões originais */
@@ -322,7 +341,7 @@ function App() {
       console.warn("Falha ao chamar API OpenAI, usando dados simulados para teste local:", err);
       // Fallback para dados fictícios estruturados de forma que o editor de materiais continue testável sem API key
       setTimeout(() => {
-        setRoomData(INITIAL_DATA);
+        setRoomData(GENERIC_FALLBACK_DATA);
         setEditorLoading(false);
         triggerNotification("Modo teste: Mapeamento simulado carregado!");
       }, 1000);
@@ -386,7 +405,7 @@ function App() {
       console.warn("Falha ao chamar API OpenAI, usando dados simulados para teste local:", err);
       // Fallback para dados fictícios estruturados de forma que o editor de materiais continue testável sem API key
       setTimeout(() => {
-        setRoomData(INITIAL_DATA);
+        setRoomData(GENERIC_FALLBACK_DATA);
         setEditorLoading(false);
         triggerNotification("Modo teste: Mapeamento simulado carregado!");
       }, 1000);
