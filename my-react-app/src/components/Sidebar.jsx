@@ -80,7 +80,7 @@ export default function Sidebar({
                 gap: '8px'
               }}>
                 <span className={`status-dot ${hasKeys ? 'active' : ''}`} style={{ backgroundColor: hasKeys ? 'var(--success)' : '#ef4444', boxShadow: hasKeys ? '0 0 6px var(--success)' : 'none' }}></span>
-                <span>{hasKeys ? 'API Claude & Stability configuradas' : 'Insira as chaves de API para gerar renders reais'}</span>
+                <span>{hasKeys ? 'API OpenAI configurada' : 'Insira a chave da OpenAI para gerar renders reais'}</span>
               </div>
             </div>
 

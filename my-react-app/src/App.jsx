@@ -62,14 +62,45 @@ const INITIAL_DATA = {
 
 // ══════════════════════════════════════════════════════════════
 // CLAUDE RESPONSE MARKDOWN PARSER
+/** Converte qualquer dataURL em PNG e retorna também as dimensões originais */
+const toPngDataUrl = (dataUrl) =>
+  new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      canvas.getContext("2d").drawImage(img, 0, 0);
+      resolve({ png: canvas.toDataURL("image/png"), width: img.width, height: img.height });
+    };
+    img.src = dataUrl;
+  });
+
+/**
+ * Escolhe o size suportado pela API mais próximo do aspect ratio original.
+ * gpt-image-1 suporta: 1024x1024 | 1536x1024 (landscape) | 1024x1536 (portrait)
+ */
+const pickSize = (width, height) => {
+  const ratio = width / height;
+  if (ratio > 1.2) return "1536x1024";   // landscape
+  if (ratio < 0.83) return "1024x1536";  // portrait
+  return "1024x1024";                    // quadrado / quase quadrado
+};
+
 // ══════════════════════════════════════════════════════════════
-const parseJSONFromClaude = (text) => {
+// OPENAI RESPONSE MARKDOWN/RAW JSON PARSER
+// ══════════════════════════════════════════════════════════════
+const parseJSONFromOpenAI = (text) => {
   try {
-    const match = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
-    const jsonStr = match ? match[1] : text;
-    return JSON.parse(jsonStr.trim());
+    try {
+      return JSON.parse(text.trim());
+    } catch {
+      const match = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+      const jsonStr = match ? match[1] : text;
+      return JSON.parse(jsonStr.trim());
+    }
   } catch (err) {
-    console.error("Failed to parse JSON from Claude:", err);
+    console.error("Failed to parse JSON from OpenAI:", err);
     throw new Error("Não foi possível converter a resposta da IA em um formato estruturado válido. Saída crua da IA: " + text.slice(0, 100) + "...");
   }
 };
@@ -82,17 +113,13 @@ function App() {
   const [log, setLog] = useState('');
   
   // API Keys (fetched from LocalStorage)
-  const [apiKey, setApiKey] = useState(
-    () => localStorage.getItem("stabilityKey") || import.meta.env.VITE_STABILITY_KEY || ""
-  );
-  const [anthropicKey, setAnthropicKey] = useState(
-    () => localStorage.getItem("anthropicKey") || import.meta.env.VITE_ANTHROPIC_KEY || ""
+  const [openaiKey, setOpenaiKey] = useState(
+    () => localStorage.getItem("openaiKey") || import.meta.env.VITE_OPENAI_KEY || ""
   );
   const [showKeysModal, setShowKeysModal] = useState(false);
 
   // Save keys to localStorage
-  useEffect(() => { localStorage.setItem("stabilityKey", apiKey); }, [apiKey]);
-  useEffect(() => { localStorage.setItem("anthropicKey", anthropicKey); }, [anthropicKey]);
+  useEffect(() => { localStorage.setItem("openaiKey", openaiKey); }, [openaiKey]);
 
   // Model file details (upload screenshot as image)
   const [file, setFile] = useState(null);
@@ -170,102 +197,51 @@ function App() {
     triggerNotification("Projeto demonstrativo carregado!");
   };
 
-  // API Call: Claude Vision analyzes the sketch and generates prompt
-  const analyzeWithClaude = async (base64Image) => {
-    const mediaType = base64Image.split(";")[0].split(":")[1];
-    const imageData = base64Image.split(",")[1];
+  // API Call: OpenAI via backend proxy (/api/render)
+  const renderWithOpenAI = async (imageDataUrl, prompt) => {
+    // Converte para PNG e captura dimensões originais
+    const { png, width, height } = await toPngDataUrl(imageDataUrl);
+    const size = pickSize(width, height);
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": anthropicKey,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true",
-      },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 300,
-        messages: [{
-          role: "user",
-          content: [
-            { type: "image", source: { type: "base64", media_type: mediaType, data: imageData } },
-            {
-              type: "text",
-              text: `You are an expert architectural visualization prompt engineer. Analyze this 3D model screenshot (likely SketchUp or similar) and write a Stable Diffusion img2img prompt for the following render style: ${STYLE_PROMPTS[lighting]}.
-              
-              Identify and describe: building type, architectural style (modern/contemporary/minimalist/etc), exterior or interior materials visible (glass, concrete, wood, brick, metal panels), vegetation, surrounding landscape, number of floors, notable structural elements.
-              
-              Respond with ONLY the Stable Diffusion prompt, max 100 words, written in English as descriptive comma-separated terms. Always end with: "architectural visualization, professional render, photorealistic, high resolution". No explanations, no preamble.`
-            }
-          ]
-        }]
-      })
-    });
-
-    if (!response.ok) {
-      const err = await response.json();
-      throw new Error("Erro Claude: " + (err.error?.message || response.statusText));
-    }
-    const data = await response.json();
-    return data.content[0].text.trim();
-  };
-
-  // API Call: Stability AI Sketch Control generates the final render
-  const renderWithStability = async (imageDataUrl, prompt) => {
-    const arr = imageDataUrl.split(",");
-    const mime = arr[0].match(/:(.*?);/)[1];
-    const bstr = atob(arr[1]);
-    let n = bstr.length;
-    const u8arr = new Uint8Array(n);
-    while (n--) u8arr[n] = bstr.charCodeAt(n);
-    const imageBlob = new Blob([u8arr], { type: mime });
+    const base64 = png.split(",")[1];
+    const bstr = atob(base64);
+    const u8 = new Uint8Array(bstr.length);
+    for (let i = 0; i < bstr.length; i++) u8[i] = bstr.charCodeAt(i);
+    const imageBlob = new Blob([u8], { type: "image/png" });
 
     const formData = new FormData();
-    formData.append("image", imageBlob, "input.png");
+    formData.append("image", imageBlob, "model.png");
     formData.append("prompt", prompt);
-    formData.append("negative_prompt", NEGATIVE_PROMPT);
-    formData.append("control_strength", "0.7");
-    formData.append("output_format", "jpeg");
+    formData.append("size", size);
 
-    const response = await fetch("https://api.stability.ai/v2beta/stable-image/control/sketch", {
+    const headers = {};
+    if (openaiKey) {
+      headers["Authorization"] = `Bearer ${openaiKey}`;
+    }
+
+    const response = await fetch("/api/render", {
       method: "POST",
-      headers: {
-        "Authorization": `Bearer ${apiKey}`,
-        "Accept": "image/*",
-      },
+      headers,
       body: formData,
     });
 
+    const data = await response.json();
     if (!response.ok) {
-      let msg;
-      try {
-        const txt = await response.text();
-        msg = JSON.parse(txt)?.errors?.[0] || txt;
-      } catch { msg = response.statusText; }
-      throw new Error(`Stability AI (${response.status}): ${msg}`);
+      throw new Error("OpenAI DALL-E: " + (data.error || response.statusText));
     }
 
-    const blob = await response.blob();
-    return new Promise((res) => {
-      const reader = new FileReader();
-      reader.onload = (e) => res(e.target.result);
-      reader.readAsDataURL(blob);
-    });
+    const b64 = data.data?.[0]?.b64_json;
+    if (!b64) throw new Error("Resposta inesperada da OpenAI.");
+    return `data:image/png;base64,${b64}`;
   };
 
   // Main Generator orchestrator
   const handleRenderStart = async () => {
     if (!file || !file.dataUrl) return;
-    if (!apiKey || !anthropicKey) {
-      setShowKeysModal(true);
-      triggerNotification("Insira suas chaves de API primeiro!");
-      return;
-    }
 
     try {
       setPhase('analyzing');
-      setLog("Analisando a cena com Claude Vision...");
+      setLog("Preparando modelo e prompt de render...");
       setResult(null);
       setGeneratedPrompt("");
       setRoomData(null);
@@ -273,22 +249,35 @@ function App() {
       setEditorLoading(false);
       setSelectedObject(null);
 
-      // 1. Vision Analysis Prompt Generation
-      const prompt = await analyzeWithClaude(file.dataUrl);
+      // Build the dynamic prompt based on lighting and preset
+      let finalPrompt = "Render a photorealistic architectural visualization image based strictly on this 3D model. ";
       
-      // Inject selected preset styles into prompt for improved results
-      let finalPrompt = prompt;
-      if (preset === 'scandi') finalPrompt = `Scandinavian minimalist design, light wooden floors, soft neutral tones, ` + finalPrompt;
-      else if (preset === 'industrial') finalPrompt = `Industrial loft style, brick walls, exposed pipes, steel columns, ` + finalPrompt;
-      else if (preset === 'rustico') finalPrompt = `Rustic cabin interior, cozy stone and raw wood elements, warm ambient details, ` + finalPrompt;
+      if (lighting === 'fotorrealista') {
+        finalPrompt += "Use bright natural daylight, clear sky, realistic sunshine and soft shadows. ";
+      } else if (lighting === 'noturno') {
+        finalPrompt += "Use warm cozy night lighting, glowing interior lights, dark evening sky, dramatic artificial lights. ";
+      } else if (lighting === 'por_do_sol') {
+        finalPrompt += "Use warm golden hour sunset lighting, orange and yellow gradient sky, long soft shadows. ";
+      }
       
+      if (preset === 'scandi') {
+        finalPrompt += "Scandinavian minimalist interior design, light oak wood floors, clean white walls, plants. ";
+      } else if (preset === 'industrial') {
+        finalPrompt += "Industrial loft interior style, red brick walls, exposed iron pipes, dark concrete floor, metal details. ";
+      } else if (preset === 'rustico') {
+        finalPrompt += "Rustic cabin interior style, natural stone accents, raw wooden beams, cozy ambient details. ";
+      } else {
+        finalPrompt += "Modern minimalist aesthetic, elegant premium styling, clean architectural lines. ";
+      }
+
+      finalPrompt += "Maintain 100% fidelity to the original geometry, structure and layout of the provided 3D model. Focus on texture, lighting and realism. Ultra-realistic render, high detail, physically accurate lighting.";
+
       setGeneratedPrompt(finalPrompt);
 
-      // 2. Sketch rendering
       setPhase('generating');
-      setLog("Gerando render fotorrealista com Stable Diffusion...");
+      setLog("Gerando render com OpenAI DALL‑E…");
 
-      const renderedImage = await renderWithStability(file.dataUrl, finalPrompt);
+      const renderedImage = await renderWithOpenAI(file.dataUrl, finalPrompt);
       
       setResult(renderedImage);
       setPhase('slider');
@@ -297,48 +286,32 @@ function App() {
       setPhase('error');
       setLog(err.message);
       triggerNotification("Falha na renderização.");
+      if (err.message.includes("VITE_OPENAI_KEY") || err.message.includes("401") || err.message.includes("chave")) {
+        setShowKeysModal(true);
+      }
     }
   };
 
-  // API Call: Claude Vision maps the rendered image room contents to JSON
-  const analyzeRoomWithClaude = async (base64Image) => {
-    const mediaType = base64Image.startsWith("data:") 
-      ? base64Image.split(";")[0].split(":")[1]
-      : "image/jpeg";
-    const imageData = base64Image.startsWith("data:")
-      ? base64Image.split(",")[1]
-      : base64Image;
-
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+  // API Call: OpenAI Chat GPT Vision maps the rendered image room contents to JSON
+  const analyzeRoomWithOpenAI = async (base64Image) => {
+    const response = await fetch("/api/analyze-room", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": anthropicKey,
-        "anthropic-version": "2023-06-01",
-        "anthropic-dangerous-direct-browser-access": "true",
+        ...(openaiKey ? { "Authorization": `Bearer ${openaiKey}` } : {})
       },
       body: JSON.stringify({
-        model: "claude-sonnet-4-20250514",
-        max_tokens: 2000,
-        messages: [{
-          role: "user",
-          content: [
-            { type: "image", source: { type: "base64", media_type: mediaType, data: imageData } },
-            {
-              type: "text",
-              text: `Analise esta imagem de design de interiores e converta todas as informações visuais em um formato JSON estruturado e altamente detalhado. Concentre-se especificamente em isolar objetos individuais. Para cada objeto principal, extraia sua cor precisa (usando nomes descritivos ou códigos hexadecimais) e seu material exato (ex: couro fosco, aço escovado, madeira de carvalho). Inclua JSON para 'room_style', e um array 'objects' contendo 'name', 'color' (com subcampos 'nome' e 'hex_aproximado'), 'material' e 'descricao'. Produza APENAS um JSON válido e formate a saída como um bloco de código JSON copiável usando Markdown (dentro de tags \`\`\`json e \`\`\`). Extraia em português esses dados.`
-            }
-          ]
-        }]
+        image: base64Image,
+        prompt: `Analise esta imagem de design de interiores e converta todas as informações visuais em um formato JSON estruturado e altamente detalhado. Concentre-se especificamente em isolar objetos individuais. Para cada objeto principal, extraia sua cor precisa (usando nomes descritivos ou códigos hexadecimais) e seu material exato (ex: couro fosco, aço escovado, madeira de carvalho). Inclua JSON para 'room_style', e um array 'objects' contendo 'name', 'color' (com subcampos 'nome' e 'hex_aproximado'), 'material' e 'descricao'. Produza APENAS um JSON válido. Extraia em português esses dados.`
       })
     });
 
     if (!response.ok) {
       const err = await response.json();
-      throw new Error("Erro Claude (Mapeamento): " + (err.error?.message || response.statusText));
+      throw new Error("Erro OpenAI (Mapeamento): " + (err.error || response.statusText));
     }
     const data = await response.json();
-    return data.content[0].text.trim();
+    return data.result;
   };
 
   const handleEnterEditor = async () => {
@@ -363,13 +336,13 @@ function App() {
     }
 
     try {
-      const activeImage = result; // base64 stability output
+      const activeImage = result; // base64 OpenAI output
       if (!activeImage) {
         throw new Error("Nenhuma imagem renderizada disponível para análise.");
       }
       
-      const rawText = await analyzeRoomWithClaude(activeImage);
-      const parsedJSON = parseJSONFromClaude(rawText);
+      const rawText = await analyzeRoomWithOpenAI(activeImage);
+      const parsedJSON = parseJSONFromOpenAI(rawText);
       
       setRoomData(parsedJSON);
       setEditorLoading(false);
@@ -379,6 +352,9 @@ function App() {
       setEditorError(err.message);
       setEditorLoading(false);
       triggerNotification("Erro ao mapear o ambiente.");
+      if (err.message.includes("VITE_OPENAI_KEY") || err.message.includes("401") || err.message.includes("chave")) {
+        setShowKeysModal(true);
+      }
     }
   };
 
@@ -521,7 +497,7 @@ function App() {
           activeMaterial={activeMaterial}
           setActiveMaterial={setActiveMaterial}
           onBackToSlider={handleBackToSlider}
-          hasKeys={!!apiKey && !!anthropicKey}
+          hasKeys={!!openaiKey}
           onOpenKeysModal={() => setShowKeysModal(true)}
         />
 
@@ -563,34 +539,17 @@ function App() {
           }}>
             <h3 className="r-modal-title" style={{ color: 'var(--text-primary)' }}>Configurações de API</h3>
             <p className="r-modal-sub" style={{ color: 'var(--text-secondary)' }}>
-              Insira suas chaves de API abaixo para conectar a aplicação ao <strong>Claude Vision (Anthropic)</strong> e ao <strong>Stability AI (Sketch Control)</strong>.
+              Insira sua chave de API abaixo para conectar a aplicação ao <strong>OpenAI (ChatGPT e DALL‑E)</strong>.
             </p>
 
             <div className="control-group" style={{ marginBottom: '16px' }}>
-              <label className="r-in-label" style={{ color: 'var(--text-secondary)' }}>Chave Anthropic (Claude API)</label>
+              <label className="r-in-label" style={{ color: 'var(--text-secondary)' }}>Chave OpenAI API</label>
               <input 
                 className="r-input" 
                 type="password" 
-                placeholder="sk-ant-..." 
-                value={anthropicKey}
-                onChange={(e) => setAnthropicKey(e.target.value)}
-                style={{
-                  backgroundColor: 'var(--bg-base)',
-                  border: '1px solid var(--border-primary)',
-                  color: 'var(--text-primary)',
-                  borderRadius: '6px'
-                }}
-              />
-            </div>
-
-            <div className="control-group" style={{ marginBottom: '16px' }}>
-              <label className="r-in-label" style={{ color: 'var(--text-secondary)' }}>Chave Stability AI</label>
-              <input 
-                className="r-input" 
-                type="password" 
-                placeholder="sk-..." 
-                value={apiKey}
-                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="sk-proj-..." 
+                value={openaiKey}
+                onChange={(e) => setOpenaiKey(e.target.value)}
                 style={{
                   backgroundColor: 'var(--bg-base)',
                   border: '1px solid var(--border-primary)',
@@ -601,7 +560,7 @@ function App() {
             </div>
 
             <p className="r-modal-note" style={{ color: 'var(--text-muted)' }}>
-              * Suas chaves ficam guardadas de forma segura apenas no navegador atual (LocalStorage) e são enviadas diretamente para as APIs das empresas parceiras.
+              * Sua chave fica guardada de forma segura apenas no navegador atual (LocalStorage) e é enviada diretamente para o servidor proxy local. Se a chave estiver configurada no arquivo <code>.env.local</code> do servidor, você pode deixar este campo em branco.
             </p>
 
             <div className="r-modal-btns">
