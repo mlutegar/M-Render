@@ -359,7 +359,7 @@ export default function PreviewArea({
       <div className="preview-toolbar">
         <div className="toolbar-info">
           {phase === 'setup' && "Aguardando inicialização"}
-          {isLoading && "Renderizando com IA: Claude Vision + Stability AI"}
+          {isLoading && "Renderizando com OpenAI gpt‑image‑1..."}
           {phase === 'slider' && "Visualizando Comparação Antes/Depois"}
           {phase === 'editor' && (
             selectedObject 
