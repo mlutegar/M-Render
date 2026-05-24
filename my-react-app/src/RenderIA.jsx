@@ -75,13 +75,16 @@ export default function RenderIA() {
     for (let i = 0; i < bstr.length; i++) u8[i] = bstr.charCodeAt(i);
     const imageBlob = new Blob([u8], { type: "image/png" });
 
-    // Envia para o servidor Express local (evita CORS)
+    // Em dev: chama /api/render (proxy Vite → localhost:3001)
+    // Em produção (GitHub Pages): chama VITE_API_URL/api/render (Render.com)
+    const API_BASE = import.meta.env.VITE_API_URL || "";
+
     const formData = new FormData();
     formData.append("image", imageBlob, "model.png");
     formData.append("prompt", RENDER_PROMPT);
     formData.append("size", size);
 
-    const response = await fetch("/api/render", {
+    const response = await fetch(`${API_BASE}/api/render`, {
       method: "POST",
       body: formData,
     });
