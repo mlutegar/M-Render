@@ -120,6 +120,11 @@ app.post("/api/analyze-room", async (req, res) => {
     }
 
     const content = data.choices?.[0]?.message?.content;
+    const refusal = data.choices?.[0]?.message?.refusal;
+    if (refusal) {
+      console.warn("OpenAI Vision refused the request. Refusal:", refusal);
+      return res.status(400).json({ error: `A IA recusou a solicitação: ${refusal}` });
+    }
     if (!content) {
       console.warn("OpenAI Vision returned response ok but choices content is empty/undefined. choices:", JSON.stringify(data.choices));
       return res.status(500).json({ error: "Resposta vazia do GPT-4o." });
