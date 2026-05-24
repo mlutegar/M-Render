@@ -208,14 +208,9 @@ function App() {
     formData.append("prompt", prompt);
     formData.append("size", size);
 
-    const headers = {};
-    if (openaiKey) {
-      headers["Authorization"] = `Bearer ${openaiKey}`;
-    }
-
-    const response = await fetch("/api/render", {
+    const API_BASE = import.meta.env.VITE_API_URL || "";
+    const response = await fetch(`${API_BASE}/api/render`, {
       method: "POST",
-      headers,
       body: formData,
     });
 
