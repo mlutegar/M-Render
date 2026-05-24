@@ -336,9 +336,6 @@ function App() {
       setEditorError(err.message);
       setEditorLoading(false);
       triggerNotification("Erro ao mapear o ambiente.");
-      if (err.message.includes("VITE_OPENAI_KEY") || err.message.includes("401") || err.message.includes("chave")) {
-        setShowKeysModal(true);
-      }
     }
   };
 
