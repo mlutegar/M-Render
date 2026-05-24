@@ -283,9 +283,9 @@ export default function PreviewArea({
                 <div className="laser-scanner"></div>
                 <div className="loading-spinner" style={{ width: '40px', height: '40px' }}></div>
                 <div>
-                  <h4 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--accent)' }}>Mapeando elementos com Claude Vision...</h4>
+                  <h4 style={{ fontSize: '14px', fontWeight: 700, color: 'var(--accent)' }}>Mapeando elementos com GPT‑4o Vision...</h4>
                   <p style={{ fontSize: '11px', color: 'var(--text-secondary)', marginTop: '4px', maxWidth: '300px', margin: '4px auto 0' }}>
-                    A inteligência artificial está isolando objetos individuais, materiais e paleta de cores.
+                    A IA está isolando objetos individuais, materiais e paleta de cores do ambiente.
                   </p>
                 </div>
               </div>
