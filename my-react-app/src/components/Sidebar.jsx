@@ -48,39 +48,21 @@ export default function Sidebar({
               />
             </div>
 
-            {/* API Keys Configuration Status Indicator */}
+            {/* API Status Indicator */}
             <div className="control-group" style={{ gap: '4px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span className="control-label" style={{ fontSize: '11px' }}>APIs de Inteligência Artificial</span>
-                <button 
-                  onClick={onOpenKeysModal}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: 'var(--accent)',
-                    fontSize: '11px',
-                    fontWeight: '600',
-                    cursor: 'pointer',
-                    textDecoration: 'underline'
-                  }}
-                  disabled={isLoading}
-                >
-                  {hasKeys ? 'Alterar Chaves' : 'Inserir Chaves'}
-                </button>
-              </div>
               <div style={{
                 padding: '10px',
                 backgroundColor: 'rgba(0,0,0,0.15)',
-                border: `1px solid ${hasKeys ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)'}`,
+                border: '1px solid rgba(16, 185, 129, 0.2)',
                 borderRadius: '6px',
                 fontSize: '11px',
-                color: hasKeys ? 'var(--text-secondary)' : '#f87171',
+                color: 'var(--text-secondary)',
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px'
               }}>
-                <span className={`status-dot ${hasKeys ? 'active' : ''}`} style={{ backgroundColor: hasKeys ? 'var(--success)' : '#ef4444', boxShadow: hasKeys ? '0 0 6px var(--success)' : 'none' }}></span>
-                <span>{hasKeys ? 'API OpenAI configurada' : 'Insira a chave da OpenAI para gerar renders reais'}</span>
+                <span className="status-dot active" style={{ backgroundColor: 'var(--success)', boxShadow: '0 0 6px var(--success)' }}></span>
+                <span>OpenAI <strong>gpt‑image‑1</strong> configurada</span>
               </div>
             </div>
 
