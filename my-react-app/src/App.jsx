@@ -290,6 +290,13 @@ function App() {
     }
   };
 
+  const handleDirectCustomize = () => {
+    if (!file || !file.dataUrl) return;
+    setResult(file.dataUrl);
+    setPhase('slider');
+    triggerNotification("Imagem carregada para personalização!");
+  };
+
   // API Call: OpenAI Chat GPT Vision maps the rendered image room contents to JSON
   const analyzeRoomWithOpenAI = async (base64Image) => {
     const API_BASE = import.meta.env.VITE_API_URL || "";
@@ -486,6 +493,7 @@ function App() {
             quality={quality}
             setQuality={setQuality}
             onRenderStart={handleRenderStart}
+            onDirectCustomize={handleDirectCustomize}
             selectedObject={selectedObject}
             setSelectedObject={setSelectedObject}
             activeMaterial={activeMaterial}

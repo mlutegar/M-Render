@@ -13,6 +13,7 @@ export default function Sidebar({
   quality,
   setQuality,
   onRenderStart,
+  onDirectCustomize,
   selectedObject, // null | { id, name, type }
   setSelectedObject,
   activeMaterial, // 'grey_linen' | 'camel_leather'
@@ -131,20 +132,39 @@ export default function Sidebar({
             </div>
 
             {(phase === 'setup' || phase === 'error') && (
-              <button 
-                className="btn-render" 
-                disabled={!file}
-                onClick={onRenderStart}
-                style={{
-                  opacity: !file ? 0.4 : 1,
-                  cursor: !file ? 'not-allowed' : 'pointer'
-                }}
-              >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polygon points="5 3 19 12 5 21 5 3" />
-                </svg>
-                Renderizar com IA
-              </button>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
+                <button 
+                  className="btn-render" 
+                  disabled={!file}
+                  onClick={onRenderStart}
+                  style={{
+                    opacity: !file ? 0.4 : 1,
+                    cursor: !file ? 'not-allowed' : 'pointer',
+                    width: '100%',
+                    marginTop: 0
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <polygon points="5 3 19 12 5 21 5 3" />
+                  </svg>
+                  Renderizar com IA
+                </button>
+                <button 
+                  className="btn-render-secondary" 
+                  disabled={!file}
+                  onClick={onDirectCustomize}
+                  style={{
+                    opacity: !file ? 0.4 : 1,
+                    cursor: !file ? 'not-allowed' : 'pointer'
+                  }}
+                >
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 20h9" />
+                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" />
+                  </svg>
+                  Personalizar Imagem
+                </button>
+              </div>
             )}
 
             {isLoading && (

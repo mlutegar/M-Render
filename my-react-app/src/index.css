@@ -461,6 +461,42 @@ button, input, select, textarea {
   transform: none;
 }
 
+.btn-render-secondary {
+  background: transparent;
+  border: 1px solid var(--border-accent);
+  color: var(--text-primary);
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 16px 24px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.btn-render-secondary:hover {
+  border-color: var(--accent);
+  background-color: rgba(var(--accent-rgb), 0.05);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.btn-render-secondary:active {
+  transform: translateY(1px);
+}
+
+.btn-render-secondary:disabled {
+  border-color: var(--border-primary);
+  color: var(--text-muted);
+  cursor: not-allowed;
+  transform: none;
+  background: transparent;
+}
+
 /* Preview Area Panel */
 .preview-area {
   flex: 1;
