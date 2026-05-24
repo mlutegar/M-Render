@@ -1,11 +1,15 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// Em produção (Render) a base é '/'
-// Em GitHub Pages seria '/M-Render/' — mas agora o deploy é via Render
 export default defineConfig({
   plugins: [react()],
-  base: process.env.NODE_ENV === 'production' ? '/' : '/M-Render/',
+
+  // VITE_BASE_PATH controla o base path:
+  //   - GitHub Pages: /M-Render/  (setado no workflow)
+  //   - Render (full-stack): /    (setado no painel do Render)
+  //   - dev local: /M-Render/     (default)
+  base: process.env.VITE_BASE_PATH || '/M-Render/',
+
   server: {
     proxy: {
       '/api': {
