@@ -283,12 +283,10 @@ function App() {
 
   // API Call: OpenAI Chat GPT Vision maps the rendered image room contents to JSON
   const analyzeRoomWithOpenAI = async (base64Image) => {
-    const response = await fetch("/api/analyze-room", {
+    const API_BASE = import.meta.env.VITE_API_URL || "";
+    const response = await fetch(`${API_BASE}/api/analyze-room`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...(openaiKey ? { "Authorization": `Bearer ${openaiKey}` } : {})
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         image: base64Image,
         prompt: `Analise esta imagem de design de interiores e converta todas as informações visuais em um formato JSON estruturado e altamente detalhado. Concentre-se especificamente em isolar objetos individuais. Para cada objeto principal, extraia sua cor precisa (usando nomes descritivos ou códigos hexadecimais) e seu material exato (ex: couro fosco, aço escovado, madeira de carvalho). Inclua JSON para 'room_style', e um array 'objects' contendo 'name', 'color' (com subcampos 'nome' e 'hex_aproximado'), 'material' e 'descricao'. Produza APENAS um JSON válido. Extraia em português esses dados.`
