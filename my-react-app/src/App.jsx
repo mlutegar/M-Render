@@ -275,9 +275,6 @@ function App() {
       setPhase('error');
       setLog(err.message);
       triggerNotification("Falha na renderização.");
-      if (err.message.includes("VITE_OPENAI_KEY") || err.message.includes("401") || err.message.includes("chave")) {
-        setShowKeysModal(true);
-      }
     }
   };
 
